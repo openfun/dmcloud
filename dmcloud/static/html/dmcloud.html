@@ -1,0 +1,17 @@
+
+<div class="dmcloud_block">
+<p>
+    <span class="video_title">{{self.title}}</span>
+    {% if self.id_video%}
+    <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
+    {%else%}
+    You should give an ID
+    {%endif%}
+    <!--
+    <span class="video_id">{self.id_video}</span>
+    <hr/>
+    -- https://www.dmcloud.net/doc/api/api-streaming.html --
+    <iframe width="848" height="480" frameborder="0" scrolling="no" src="{self.url}"></iframe>
+    -->
+</p>
+</div>
