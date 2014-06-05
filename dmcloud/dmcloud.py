@@ -30,6 +30,8 @@ class DmCloud(XBlock):
     # create a temporary py file to store DM Cloud User Id and ApiKey
     from key import *
     cloudkey = CloudKey(USER_ID, API_KEY)
+    
+    #print "--> RUNTIME : %s" %self.runtime
 
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
@@ -62,10 +64,17 @@ class DmCloud(XBlock):
         The primary view of the DmCloud, shown to students
         when viewing courses.
         """
-        print "SELF : %s" %self
-        print 20*"~"
-        log.info("CONTEXT : %s" %context)
-        log.info("PARENT : %s", self.parent)
+        print "RUNTIME STUDENT runtime : %s" %self.runtime
+        print self.location.org #from opaque_keys.edx.locations import Location
+        #category / name / course / tag / org / revision
+        #print "RUNTIME STUDENT course_id: %s" %self.runtime.course_id #--> NONE
+        #print "RUNTIME STUDENT modulestore: %s" %self.runtime.modulestore -> draft module store
+        # --> ok 
+        #print "RUNTIME STUDENT module_data : %s" %self.runtime.module_data
+        # module_data: a dict mapping Location -> json that was cached from the underlying modulestore
+        
+        #print "RUNTIME STUDENT default_class: %s" %self.runtime.default_class
+        #print "RUNTIME STUDENT cached_metadata: %s" %self.runtime.cached_metadata
         
         #html = self.resource_string("static/html/dmcloud.html")
         #frag = Fragment(html.format(self=self))
@@ -85,10 +94,13 @@ class DmCloud(XBlock):
         The primary view of the DmCloud, shown to students
         when viewing courses.
         """
-        print "SELF : %s" %self
+        #print "SELF : %s" %self
         print 20*"~"
-        log.info("CONTEXT : %s" %context)
-        log.info("PARENT : %s", self.parent)
+        print "RUNTIME Studio : %s" %self.runtime
+        print "RUNTIME Studio : %s" %self.runtime.course_id
+        print 20*"~"
+        #log.info("CONTEXT : %s" %context)
+        #log.info("PARENT : %s", self.parent)
         html = self.resource_string("static/html/dmcloud-studio.html")
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/dmcloud.css"))
@@ -109,20 +121,6 @@ class DmCloud(XBlock):
         return {
             'result': 'success',
         }
-    
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
-    
-#    @XBlock.json_handler
-#    def increment_count(self, data, suffix=''):
-#        """
-#        An example handler, which increments the data.
-#        """
-#        # Just to show data coming in...
-#        assert data['hello'] == 'world'
-#
-#        self.count += 1
-#        return {"count": self.count}
     
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
