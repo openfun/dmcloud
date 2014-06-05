@@ -25,9 +25,9 @@ class DmCloud(XBlock):
     For now, it does nothing...
     """
     
-    USER_ID=''
-    API_KEY=''
-    
+    #USER_ID=''
+    #API_KEY=''
+    from key import *
     cloudkey = CloudKey(USER_ID, API_KEY)
 
     # Fields are defined on the class.  You can access them in your code as
