@@ -27,6 +27,7 @@ class DmCloud(XBlock):
     
     #USER_ID=''
     #API_KEY=''
+    # create a temporary py file to store DM Cloud User Id and ApiKey
     from key import *
     cloudkey = CloudKey(USER_ID, API_KEY)
 
