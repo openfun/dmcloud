@@ -2,8 +2,12 @@
 <div class="dmcloud_block">
 <p>
     <span class="video_title">{{self.title}}</span>
-    {% if self.id_video%}
-    <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
+    {% if self.id_video %}
+        {% if self.cloudkey and url %}
+        <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
+        {%else%}
+        No CloudKey found
+        {%endif%}
     {%else%}
     You should give an ID
     {%endif%}

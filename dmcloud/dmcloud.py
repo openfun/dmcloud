@@ -8,8 +8,8 @@ from xblock.fragment import Fragment
 from django.template import Context, Template
 import time, sys
 
-from cloudkey import CloudKey, SecLevel
-from cloudkey import AuthenticationError, NotFound, InvalidParameter, Exists, MissingParameter
+#from cloudkey import CloudKey, SecLevel
+#from cloudkey import AuthenticationError, NotFound, InvalidParameter, Exists, MissingParameter
 
 # Globals ###########################################################
 #BASE_URL='http://sebest.api.dev.int.dmcloud.net'
@@ -18,20 +18,42 @@ from cloudkey import AuthenticationError, NotFound, InvalidParameter, Exists, Mi
 
 log = logging.getLogger(__name__)
 
+try:
+    from cloudkey import CloudKey
+except:
+    log.error("You have to install cloudkey before using this block")
+
+try:
+    from universities.models import University
+except:
+    log.error("You have to install universities application before using this block")
 
 class DmCloud(XBlock):
     """
     TO-DO: document what your XBlock does.
     For now, it does nothing...
     """
-    
-    #USER_ID=''
-    #API_KEY=''
-    # create a temporary py file to store DM Cloud User Id and ApiKey
-    from key import *
-    cloudkey = CloudKey(USER_ID, API_KEY)
-    
-    #print "--> RUNTIME : %s" %self.runtime
+    def __init__(self, runtime, field_data, scope_ids):
+        super(DmCloud, self).__init__(runtime, field_data, scope_ids)
+        #from key import *
+        self.cloudkey = None
+        print "RUNTIME STUDENT runtime : %s" %self.runtime
+        print "RUNTIME STUDENT Location : %s" %self.location.org #from opaque_keys.edx.locations import Location
+        univ = University.objects.get(code=self.location.org)
+        try:
+            univ = University.objects.get(code=self.location.org)
+            #self.USER_ID = 
+            self.cloudkey = CloudKey(univ.dm_user_id, univ.dm_api_key)
+        except:
+            log.error("university not found")
+        #category / name / course / tag / org / revision
+        #print "RUNTIME STUDENT course_id: %s" %self.runtime.course_id #--> NONE
+        #print "RUNTIME STUDENT modulestore: %s" %self.runtime.modulestore -> draft module store
+        # --> ok 
+        #print "RUNTIME STUDENT module_data : %s" %self.runtime.module_data
+        # module_data: a dict mapping Location -> json that was cached from the underlying modulestore
+        #print "RUNTIME STUDENT default_class: %s" %self.runtime.default_class
+        #print "RUNTIME STUDENT cached_metadata: %s" %self.runtime.cached_metadata
 
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
@@ -40,8 +62,6 @@ class DmCloud(XBlock):
         help="The dmcloud video id",
         default=""
     )
-    
-    #url = String(help="The URL of the video to display", default='https://api.dmcloud.net/player/embed/52667d13947399581c000001/53686bf39473993104772d40?auth=1714817958-0-x9dbf06c-e1542d6a652904571bceddf39909d183', scope=Scope.content)
                   
     title = String(help="Title", default='My new video', scope=Scope.content)
 
@@ -64,22 +84,15 @@ class DmCloud(XBlock):
         The primary view of the DmCloud, shown to students
         when viewing courses.
         """
-        print "RUNTIME STUDENT runtime : %s" %self.runtime
-        print self.location.org #from opaque_keys.edx.locations import Location
-        #category / name / course / tag / org / revision
-        #print "RUNTIME STUDENT course_id: %s" %self.runtime.course_id #--> NONE
-        #print "RUNTIME STUDENT modulestore: %s" %self.runtime.modulestore -> draft module store
-        # --> ok 
-        #print "RUNTIME STUDENT module_data : %s" %self.runtime.module_data
-        # module_data: a dict mapping Location -> json that was cached from the underlying modulestore
-        
-        #print "RUNTIME STUDENT default_class: %s" %self.runtime.default_class
-        #print "RUNTIME STUDENT cached_metadata: %s" %self.runtime.cached_metadata
-        
         #html = self.resource_string("static/html/dmcloud.html")
         #frag = Fragment(html.format(self=self))
         frag = Fragment()
-        url = self.cloudkey.media.get_embed_url(id=self.id_video)
+        url = ""
+        try:
+            url = self.cloudkey.media.get_embed_url(id=self.id_video)
+            print "URL : %s" %url
+        except:
+            pass
         frag.add_content(self.render_template("static/html/dmcloud.html", {
             'self': self,
             'url': url
@@ -94,11 +107,6 @@ class DmCloud(XBlock):
         The primary view of the DmCloud, shown to students
         when viewing courses.
         """
-        #print "SELF : %s" %self
-        print 20*"~"
-        print "RUNTIME Studio : %s" %self.runtime
-        print "RUNTIME Studio : %s" %self.runtime.course_id
-        print 20*"~"
         #log.info("CONTEXT : %s" %context)
         #log.info("PARENT : %s", self.parent)
         html = self.resource_string("static/html/dmcloud-studio.html")
