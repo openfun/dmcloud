@@ -1,23 +1,30 @@
-"""Setup for dmcloud XBlock."""
+# -*- coding: utf-8 -*-
+
+# Imports ###########################################################
 
 import os
 from setuptools import setup
 
 
-def package_data(pkg, root):
+# Functions #########################################################
+
+def package_data(pkg, root_list):
     """Generic function to find package_data for `pkg` under `root`."""
     data = []
-    for dirname, _, files in os.walk(os.path.join(pkg, root)):
-        for fname in files:
-            data.append(os.path.relpath(os.path.join(dirname, fname), pkg))
+    for root in root_list:
+        for dirname, _, files in os.walk(os.path.join(pkg, root)):
+            for fname in files:
+                data.append(os.path.relpath(os.path.join(dirname, fname), pkg))
 
     return {pkg: data}
 
 
+# Main ##############################################################
+
 setup(
     name='dmcloud-xblock',
     version='0.2',
-    description='dmcloud XBlock',   # TODO: write a better description.
+    description='XBlock - DM Cloud Video Player',   # TODO: write a better description.
     packages=[
         'dmcloud',
     ],
@@ -29,5 +36,6 @@ setup(
             'dmcloud = dmcloud:DmCloud',
         ]
     },
-    package_data=package_data("dmcloud", "static"),
+    #package_data=package_data("dmcloud", "static"),
+    package_data=package_data("dmcloud", ["templates", "public"]),
 )

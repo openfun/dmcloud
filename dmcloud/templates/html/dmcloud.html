@@ -1,4 +1,4 @@
-
+{% load i18n %}
 <div class="dmcloud_block">
 <p>
     <span class="video_title">{{self.title}}</span>
@@ -6,16 +6,10 @@
         {% if self.cloudkey and url %}
         <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
         {%else%}
-        No CloudKey found
+        {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
         {%endif%}
     {%else%}
-    You should give an ID
+    {% trans "Click on edit to give an ID to load a video" %}
     {%endif%}
-    <!--
-    <span class="video_id">{self.id_video}</span>
-    <hr/>
-    -- https://www.dmcloud.net/doc/api/api-streaming.html --
-    <iframe width="848" height="480" frameborder="0" scrolling="no" src="{self.url}"></iframe>
-    -->
 </p>
 </div>

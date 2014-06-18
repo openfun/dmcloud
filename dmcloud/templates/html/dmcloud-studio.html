@@ -1,0 +1,36 @@
+{% load i18n %}
+<div class="dmcloud_block">
+<div class="xblock-title">{% trans "Video From DM Cloud" %}</div>
+<!-- TODO: Replace by default edit view once available in Studio -->
+<div class="wrapper-comp-settings is-active editor-with-buttons" id="settings-tab">
+  <script id="metadata-editor-tpl" type="text/template">// JS crashes when empty //</script>
+  <ul class="list-input settings-list">
+      <li class="field comp-setting-entry is-set">
+          <div class="wrapper-comp-setting">
+            <label class="label setting-label" for="video_title">{% trans "Title" %}</label>
+            <input class="input setting-input" id="video_title" value="{{self.title}}" type="text">
+          </div>
+          <span class="tip setting-help">{% trans "Title of the video"%}</span>
+      </li>
+      <li class="field comp-setting-entry is-set">
+          <div class="wrapper-comp-setting">
+            <label class="label setting-label" for="video_id">{% trans "Video ID"%}</label>
+            <input class="input setting-input" id="video_id" value="{{self.id_video}}" type="text">
+          </div>
+          <span class="tip setting-help">{% trans "Fill this with the ID of the video found on DM Cloud"%}</span>
+      </li>
+  </ul>
+  <div class="xblock-actions">
+    <span class="xblock-editor-error-message"></span>
+    <ul>
+      <li class="action-item">
+        <a href="#" class="button action-primary save-button">{% trans "Save"%}</a>
+      </li>
+
+      <li class="action-item">
+        <a href="#" class="button cancel-button">{% trans "Cancel"%}</a>
+      </li>
+    </ul>
+  </div>
+</div>
+</div>

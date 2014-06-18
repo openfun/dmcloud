@@ -5,10 +5,14 @@
 
 import pkg_resources
 import logging
+
+from django.utils.translation import ugettext as _
+
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String
 from xblock.fragment import Fragment
 from django.template import Context, Template
+
 import time, sys
 
 ################################################################################
@@ -48,11 +52,13 @@ class DmCloud(XBlock):
 
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
-    title = String(help="Title", default='My new video', scope=Scope.content)
+    title = String(help=_('Title of the video'), default=_('My new video'), scope=Scope.content, display_name=_('Title'))
+    
     id_video = String(
         scope=Scope.content,
-        help="The dmcloud video id",
-        default=""
+        help=_('Fill this with the ID of the video found on DM Cloud'),
+        default="",
+        display_name=_('Video ID')
     )
 
     def resource_string(self, path):
@@ -78,21 +84,21 @@ class DmCloud(XBlock):
             url = self.cloudkey.media.get_embed_url(id=self.id_video)
         except:
             pass
-        frag.add_content(self.render_template("static/html/dmcloud.html", {
+        frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'url': url
         }))
-        frag.add_css(self.resource_string("static/css/dmcloud.css"))
+        frag.add_css(self.resource_string("public/css/dmcloud.css"))
         return frag
     
     def studio_view(self, context=None):
         """
         Editing view in Studio
         """
-        html = self.resource_string("static/html/dmcloud-studio.html")
-        frag = Fragment(html.format(self=self))
-        frag.add_css(self.resource_string("static/css/dmcloud.css"))
-        frag.add_javascript(self.resource_string("static/js/src/dmcloud.js"))
+        frag = Fragment()
+        frag.add_content(self.render_template("/templates/html/dmcloud-studio.html", {'self': self}))
+        frag.add_css(self.resource_string("public/css/dmcloud.css"))
+        frag.add_javascript(self.resource_string("public/js/src/dmcloud.js"))
         frag.initialize_js('DmCloud')
         return frag    
     
