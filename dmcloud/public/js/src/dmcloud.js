@@ -7,8 +7,9 @@ function DmCloud(runtime, element) {
     
     $('.save-button', element).bind('click', function() {
         var data = {
-            'video_title': $('#video_title').val(),
+            'display_name': $('#edit_display_name').val(),
             'id_video': $('#video_id').val(),
+            'allow_download_video': $('#allow_download_video').val()
         };
 
         $.post(handlerUrl, JSON.stringify(data)).complete(function() {

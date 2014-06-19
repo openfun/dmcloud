@@ -9,7 +9,7 @@ import logging
 from django.utils.translation import ugettext as _
 
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String
+from xblock.fields import Scope, Integer, String, Boolean
 from xblock.fragment import Fragment
 from django.template import Context, Template
 
@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 #  Specifics Imports ###########################################################
 try:
     from cloudkey import CloudKey
+    from cloudkey import sign_url
 except:
     log.error("You have to install cloudkey before using this block")
 try:
@@ -52,13 +53,27 @@ class DmCloud(XBlock):
 
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
-    title = String(help=_('Title of the video'), default=_('My new video'), scope=Scope.content, display_name=_('Title'))
+    #title = String(help=_('Title of the video'), default=_('My new video'), scope=Scope.content, display_name=_('Title'))
+    
+    display_name = String(
+        help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
+        display_name=_("Component Display Name"),
+        default="Dm Cloud Video",
+        scope=Scope.settings
+    )
     
     id_video = String(
         scope=Scope.content,
         help=_('Fill this with the ID of the video found on DM Cloud'),
         default="",
         display_name=_('Video ID')
+    )
+    
+    allow_download_video = Boolean(
+        help=_("Allow students to download this video."),
+        display_name=_("Video Download Allowed"),
+        scope=Scope.settings,
+        default=False
     )
 
     def resource_string(self, path):
@@ -79,14 +94,19 @@ class DmCloud(XBlock):
         Player view, displayed to the student
         """
         frag = Fragment()
-        url = ""
-        try:
-            url = self.cloudkey.media.get_embed_url(id=self.id_video)
-        except:
-            pass
+        embed_url = ""
+        stream_url = ""
+        if self.id_video != "":
+            try:
+                embed_url = self.cloudkey.media.get_embed_url(id=self.id_video)
+                if self.allow_download_video :
+                    stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True)
+            except:
+                pass
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
-            'url': url
+            'url': embed_url,
+            'stream_url' : stream_url
         }))
         frag.add_css(self.resource_string("public/css/dmcloud.css"))
         return frag
@@ -104,12 +124,20 @@ class DmCloud(XBlock):
     
     @XBlock.json_handler
     def studio_submit(self, submissions, suffix=''):
-        log.info(u'Received submissions: {}'.format(submissions))
-        self.id_video = submissions['id_video']
-        self.title = submissions['video_title']
-        return {
-            'result': 'success',
-        }
+        if submissions['id_video']== "":
+            response = {
+                'result': 'error',
+                'message': 'You should give a video ID'
+            }
+        else:
+            log.info(u'Received submissions: {}'.format(submissions))
+            self.display_name = submissions['display_name']
+            self.id_video = submissions['id_video']
+            self.allow_download_video = submissions['allow_download_video']
+            response = {
+                'result': 'success',
+            }
+        return response
     
     @staticmethod
     def workbench_scenarios():

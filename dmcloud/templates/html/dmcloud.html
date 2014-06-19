@@ -1,15 +1,24 @@
 {% load i18n %}
 <div class="dmcloud_block">
+<!-- <h2 class="video_title">{{self.title}}</h2> -->
 <p>
-    <span class="video_title">{{self.title}}</span>
     {% if self.id_video %}
-        {% if self.cloudkey and url %}
+        {% if self.cloudkey and url != "" %}
         <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
         {%else%}
         {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
         {%endif%}
     {%else%}
     {% trans "Click on edit to give an ID to load a video" %}
+    {%endif%}
+    {% if self.allow_download_video %}
+    {% if stream_url != "" %}
+    <ul class="wrapper-downloads">
+    <li class="video-sources video-download-button">
+    <a href="{{stream_url}}" target="_blank" download>{% trans "Download" %}</a>
+    </li>
+    </ul>
+    {%endif%}
     {%endif%}
 </p>
 </div>
