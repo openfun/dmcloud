@@ -11,6 +11,10 @@ from django.utils.translation import ugettext as _
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
+
+from xmodule.fields import RelativeTime
+from collections import OrderedDict
+
 from xblock.fragment import Fragment
 from django.template import Context, Template
 
@@ -122,11 +126,24 @@ class DmCloud(XBlock):
         default=False
     )
     
+    saved_video_position = RelativeTime(
+        help="Current position in the video.",
+        scope=Scope.user_state,
+        default=datetime.timedelta(seconds=0)
+    )
+    
     sub = String(
         help="The default transcript for the video, from the Default Timed Transcript field on the Basic tab. This transcript should be in English. You don't have to change this setting.",
         display_name="Default Timed Transcript",
         scope=Scope.settings,
         default=""
+    )
+    
+    show_captions = Boolean(
+        help="Specify whether the transcripts appear with the video by default.",
+        display_name="Show Transcript",
+        scope=Scope.settings,
+        default=True
     )
 
     def resource_string(self, path):
@@ -146,8 +163,42 @@ class DmCloud(XBlock):
         """
         Player view, displayed to the student
         """
-
-        """
+        transcript_language = u'en'
+        languages = {'en': 'English'}
+        sorted_languages = OrderedDict(sorted(languages.items(), key=itemgetter(1)))
+        ### LOAD Edx video template
+        test_data = {
+            'transcript_language': u'en', 
+            'display_name': u'Video', 
+            'yt_test_url': 'gdata.youtube.com/feeds/api/videos/', 
+            'general_speed': 1.0, 
+            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'}, 
+            'show_captions': 'false', 
+            'transcript_download_format': 'srt', 
+            'speed': 'null', 
+            'id': u'i4x-CNAM-CNAM002-video-ab312a5f718547ef94d4d979d96d7cf9', 
+            'transcript_languages': '{"en": "English"}', 
+            'data_dir': None, 
+            'sub': u'', 
+            'start': 0.0, 
+            'track': None, 
+            'yt_api_url': 'www.youtube.com/iframe_api', 
+            'transcript_download_formats_list': [{'display_name': 'SubRip (.srt) file', 'value': 'srt'}, {'display_name': 'Text (.txt) file', 'value': 'txt'}], 
+            'ajax_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/xmodule_handler/save_user_state', 
+            'end': 0.0, 
+            'youtube_streams': u'1.00:oceans.webm', 
+            'yt_test_timeout': 1500, 
+            'transcript_available_translations_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/transcript/available_translations', 
+            'transcript_translation_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/transcript/translation', 
+            'handout': None, 
+            'saved_video_position': 0.0, 
+            'autoplay': False
+            }
+        
+        #print "CONTEXT : %s" %context
+        
+        #context.update(test_data)
+        
         data = {
             'ajax_url': "",
             'autoplay': False,
@@ -155,15 +206,15 @@ class DmCloud(XBlock):
             # isn't on the filesystem
             'data_dir': None,
             'display_name': self.display_name,
-            'end': datetime.timedelta(seconds=0),
+            'end': 0,
             'handout': "",
-            'id': self.id_video,
-            'show_captions': False,
-            'sources': {'mp4':"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.mp4", 'webm':"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.webm", "ogg":"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.ogg"},
+            'id': self.location.html_id(),
+            'show_captions': json.dumps(self.show_captions),
+            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'},
             'speed': json.dumps(float(1)),
             'general_speed': float(1),
-            'saved_video_position': 0,
-            'start': datetime.timedelta(seconds=0),
+            'saved_video_position': self.saved_video_position.total_seconds(),
+            'start': 0,
             'sub': self.sub,
             'track': "",
             'youtube_streams': "",
@@ -174,29 +225,31 @@ class DmCloud(XBlock):
             'yt_test_url': settings.YOUTUBE['TEST_URL'],
             'transcript_download_format': "",
             'transcript_download_formats_list': None,
-            'transcript_language': "en",
-            'transcript_languages': [],
+            'transcript_language': transcript_language,
+            'transcript_languages': json.dumps(sorted_languages),
             'transcript_translation_url': self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
             'transcript_available_translations_url': self.runtime.handler_url(self, 'transcript', 'available_translations').rstrip('/?'),
         }
         
-        html = render_to_string('video.html', data, None, "lms.main")
+        html = render_to_string('video.html', test_data, None, "lms.main")
         
         frag = Fragment(html)
         for css in self.css.get('scss'):
             frag.add_css(css)
-        print 20*"*"
-        print self.js.get('js')
-        print 20*"*"
+        #print 20*"*"
+        #print self.js.get('js')
+        #print 20*"*"
         for js in self.js.get('js'):
             frag.add_javascript(js)
-        frag.initialize_js('Video')
-        return frag
-        """
-        ###
-        #TEST VIDEO MODULE
+            
+        frag.initialize_js('DmCloud')
         
-        ####
+        return frag
+        
+        ###
+        # VIDEO MODULE
+        #
+        #### => work and load dailymotion cloud player
         frag = Fragment()
         embed_url = ""
         stream_url = ""
