@@ -4,6 +4,7 @@
 # Globals Imports ##############################################################
 
 import pkg_resources
+from pkg_resources import resource_string
 import logging
 
 from django.utils.translation import ugettext as _
@@ -14,6 +15,15 @@ from xblock.fragment import Fragment
 from django.template import Context, Template
 
 import time, sys
+
+from edxmako import LOOKUP
+from edxmako.shortcuts import *
+import datetime
+import json
+from operator import itemgetter
+from django.conf import settings
+
+#from xmodule.video_module import VideoModule
 
 ################################################################################
 #  Globals Var #################################################################
@@ -55,6 +65,42 @@ class DmCloud(XBlock):
     # self.<fieldname>.
     #title = String(help=_('Title of the video'), default=_('My new video'), scope=Scope.content, display_name=_('Title'))
     
+    video_time = 0
+    icon_class = 'video'
+
+    # To make sure that js files are called in proper order we use numerical
+    # index. We do that to avoid issues that occurs in tests.
+    #module = __name__.replace('.video_module', '', 2)
+    module="xmodule"
+    js = {
+        'js': [
+            resource_string(module, 'js/src/video/00_video_storage.js'),
+            resource_string(module, 'js/src/video/00_resizer.js'),
+            resource_string(module, 'js/src/video/00_async_process.js'),
+            resource_string(module, 'js/src/video/00_sjson.js'),
+            resource_string(module, 'js/src/video/00_iterator.js'),
+            resource_string(module, 'js/src/video/01_initialize.js'),
+            resource_string(module, 'js/src/video/025_focus_grabber.js'),
+            resource_string(module, 'js/src/video/02_html5_video.js'),
+            resource_string(module, 'js/src/video/03_video_player.js'),
+            resource_string(module, 'js/src/video/035_video_accessible_menu.js'),
+            resource_string(module, 'js/src/video/04_video_control.js'),
+            resource_string(module, 'js/src/video/05_video_quality_control.js'),
+            resource_string(module, 'js/src/video/06_video_progress_slider.js'),
+            resource_string(module, 'js/src/video/07_video_volume_control.js'),
+            resource_string(module, 'js/src/video/08_video_speed_control.js'),
+            resource_string(module, 'js/src/video/09_video_caption.js'),
+            resource_string(module, 'js/src/video/10_main.js')
+        ]
+    }
+    css = {'scss': [
+        resource_string(module, 'css/video/display.scss'),
+        resource_string(module, 'css/video/accessible_menu.scss'),
+    ]}
+    js_module_name = "Video"
+    
+    
+    
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
         display_name=_("Component Display Name"),
@@ -75,6 +121,13 @@ class DmCloud(XBlock):
         scope=Scope.settings,
         default=False
     )
+    
+    sub = String(
+        help="The default transcript for the video, from the Default Timed Transcript field on the Basic tab. This transcript should be in English. You don't have to change this setting.",
+        display_name="Default Timed Transcript",
+        scope=Scope.settings,
+        default=""
+    )
 
     def resource_string(self, path):
         """Gets the content of a resource"""
@@ -93,12 +146,63 @@ class DmCloud(XBlock):
         """
         Player view, displayed to the student
         """
+
+        """
+        data = {
+            'ajax_url': "",
+            'autoplay': False,
+            # This won't work when we move to data that
+            # isn't on the filesystem
+            'data_dir': None,
+            'display_name': self.display_name,
+            'end': datetime.timedelta(seconds=0),
+            'handout': "",
+            'id': self.id_video,
+            'show_captions': False,
+            'sources': {'mp4':"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.mp4", 'webm':"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.webm", "ogg":"http://www.supportduweb.com/page/media/videoTag/BigBuckBunny.ogg"},
+            'speed': json.dumps(float(1)),
+            'general_speed': float(1),
+            'saved_video_position': 0,
+            'start': datetime.timedelta(seconds=0),
+            'sub': self.sub,
+            'track': "",
+            'youtube_streams': "",
+            # TODO: Later on the value 1500 should be taken from some global
+            # configuration setting field.
+            'yt_test_timeout': 1500,
+            'yt_api_url': settings.YOUTUBE['API'],
+            'yt_test_url': settings.YOUTUBE['TEST_URL'],
+            'transcript_download_format': "",
+            'transcript_download_formats_list': None,
+            'transcript_language': "en",
+            'transcript_languages': [],
+            'transcript_translation_url': self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
+            'transcript_available_translations_url': self.runtime.handler_url(self, 'transcript', 'available_translations').rstrip('/?'),
+        }
+        
+        html = render_to_string('video.html', data, None, "lms.main")
+        
+        frag = Fragment(html)
+        for css in self.css.get('scss'):
+            frag.add_css(css)
+        print 20*"*"
+        print self.js.get('js')
+        print 20*"*"
+        for js in self.js.get('js'):
+            frag.add_javascript(js)
+        frag.initialize_js('Video')
+        return frag
+        """
+        ###
+        #TEST VIDEO MODULE
+        
+        ####
         frag = Fragment()
         embed_url = ""
         stream_url = ""
         if self.id_video != "":
             try:
-                embed_url = self.cloudkey.media.get_embed_url(id=self.id_video)
+                embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
                 if self.allow_download_video :
                     stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True)
             except:
