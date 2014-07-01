@@ -166,25 +166,27 @@ class DmCloud(XBlock):
         transcript_language = u'en'
         languages = {'en': 'English'}
         sorted_languages = OrderedDict(sorted(languages.items(), key=itemgetter(1)))
+        
+        
         ### LOAD Edx video template
         test_data = {
-            'transcript_language': u'en', 
-            'display_name': u'Video', 
+            'transcript_language': "", 
+            'display_name': "Video", 
             'yt_test_url': 'gdata.youtube.com/feeds/api/videos/', 
             'general_speed': 1.0, 
-            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'}, 
+            'sources': {"mp4": u'http://vjs.zencdn.net/v/oceans.mp4',"webm": u'http://vjs.zencdn.net/v/oceans.webm', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'}, 
             'show_captions': 'false', 
             'transcript_download_format': 'srt', 
             'speed': 'null', 
-            'id': u'i4x-CNAM-CNAM002-video-ab312a5f718547ef94d4d979d96d7cf9', 
-            'transcript_languages': '{"en": "English"}', 
+            'id': self.location.html_id(), 
+            'transcript_languages': json.dumps({}), 
             'data_dir': None, 
             'sub': u'', 
             'start': 0.0, 
             'track': None, 
             'yt_api_url': 'www.youtube.com/iframe_api', 
             'transcript_download_formats_list': [{'display_name': 'SubRip (.srt) file', 'value': 'srt'}, {'display_name': 'Text (.txt) file', 'value': 'txt'}], 
-            'ajax_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/xmodule_handler/save_user_state', 
+            'ajax_url': self.runtime.handler_url(self, 'studio_submit'), 
             'end': 0.0, 
             'youtube_streams': u'1.00:oceans.webm', 
             'yt_test_timeout': 1500, 
@@ -210,7 +212,7 @@ class DmCloud(XBlock):
             'handout': "",
             'id': self.location.html_id(),
             'show_captions': json.dumps(self.show_captions),
-            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'},
+            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4',u'webm': u'http://vjs.zencdn.net/v/oceans.webm', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'},
             'speed': json.dumps(float(1)),
             'general_speed': float(1),
             'saved_video_position': self.saved_video_position.total_seconds(),
@@ -239,10 +241,14 @@ class DmCloud(XBlock):
         #print 20*"*"
         #print self.js.get('js')
         #print 20*"*"
-        for js in self.js.get('js'):
-            frag.add_javascript(js)
+        #for js in self.js.get('js'):
+        #    frag.add_javascript(js)
             
-        frag.initialize_js('DmCloud')
+        #frag.initialize_js('Video')
+        #frag.add_css(self.resource_string("public/css/dmcloud.css"))
+        frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
+        #frag.initialize_js('DmCloud')
+        frag.initialize_js('DmCloudVideo')
         
         return frag
         
