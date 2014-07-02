@@ -1,24 +1,61 @@
 {% load i18n %}
+
+
 <div class="dmcloud_block">
 <!-- <h2 class="video_title">{{self.title}}</h2> -->
+<!--
+<link href="//vjs.zencdn.net/4.6/video-js.css" rel="stylesheet">
+<script src="//vjs.zencdn.net/4.6/video.js"></script>
+-->
 <p>
     {% if self.id_video %}
-        {% if self.cloudkey and url != "" %}
+    {% if self.cloudkey and stream_url != "" %}
+     <video id='my_video' width="640" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
+      controls preload="auto"
+      poster="{{thumbnail_url}}">
+
+      <source id='mp4' 
+        src="{{stream_url}}"
+        type='video/mp4'>
+        
+        {% for lang, url in subs_url.items %}
+        <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
+        {%endfor%}
+        
+    <!--
+      <p>
+        {% if url != "" %}
         <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
         {%else%}
+        {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
+        {%endif%}
+      </p>
+     -->
+    </video>
+    <!--
+    <script>
+        videojs("my_video", {}, function(){
+          // Player (this) is initialized and ready.
+          alert('ok2');
+        });
+    </script>
+    -->
+    {%else%}
         {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
         {%endif%}
     {%else%}
     {% trans "Click on edit to give an ID to load a video" %}
     {%endif%}
+    
+    
     {% if self.allow_download_video %}
-    {% if stream_url != "" %}
-    <ul class="wrapper-downloads">
-    <li class="video-sources video-download-button">
-    <a href="{{stream_url}}" target="_blank" download>{% trans "Download" %}</a>
-    </li>
-    </ul>
-    {%endif%}
+        {% if download_url != "" %}
+            <ul class="wrapper-downloads">
+                <li class="video-sources video-download-button">
+                <a href="{{download_url}}" target="_blank" download>{% trans "Download" %}</a>
+                </li>
+            </ul>
+        {%endif%}
     {%endif%}
 </p>
 </div>

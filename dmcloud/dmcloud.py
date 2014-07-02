@@ -12,22 +12,12 @@ from django.utils.translation import ugettext as _
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 
-from xmodule.fields import RelativeTime
-from collections import OrderedDict
-
 from xblock.fragment import Fragment
 from django.template import Context, Template
 
+from webob import Response #send response from handler
+
 import time, sys
-
-from edxmako import LOOKUP
-from edxmako.shortcuts import *
-import datetime
-import json
-from operator import itemgetter
-from django.conf import settings
-
-#from xmodule.video_module import VideoModule
 
 ################################################################################
 #  Globals Var #################################################################
@@ -74,36 +64,6 @@ class DmCloud(XBlock):
 
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
-    #module = __name__.replace('.video_module', '', 2)
-    module="xmodule"
-    js = {
-        'js': [
-            resource_string(module, 'js/src/video/00_video_storage.js'),
-            resource_string(module, 'js/src/video/00_resizer.js'),
-            resource_string(module, 'js/src/video/00_async_process.js'),
-            resource_string(module, 'js/src/video/00_sjson.js'),
-            resource_string(module, 'js/src/video/00_iterator.js'),
-            resource_string(module, 'js/src/video/01_initialize.js'),
-            resource_string(module, 'js/src/video/025_focus_grabber.js'),
-            resource_string(module, 'js/src/video/02_html5_video.js'),
-            resource_string(module, 'js/src/video/03_video_player.js'),
-            resource_string(module, 'js/src/video/035_video_accessible_menu.js'),
-            resource_string(module, 'js/src/video/04_video_control.js'),
-            resource_string(module, 'js/src/video/05_video_quality_control.js'),
-            resource_string(module, 'js/src/video/06_video_progress_slider.js'),
-            resource_string(module, 'js/src/video/07_video_volume_control.js'),
-            resource_string(module, 'js/src/video/08_video_speed_control.js'),
-            resource_string(module, 'js/src/video/09_video_caption.js'),
-            resource_string(module, 'js/src/video/10_main.js')
-        ]
-    }
-    css = {'scss': [
-        resource_string(module, 'css/video/display.scss'),
-        resource_string(module, 'css/video/accessible_menu.scss'),
-    ]}
-    js_module_name = "Video"
-    
-    
     
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
@@ -126,24 +86,10 @@ class DmCloud(XBlock):
         default=False
     )
     
-    saved_video_position = RelativeTime(
+    saved_video_position = String(
         help="Current position in the video.",
         scope=Scope.user_state,
-        default=datetime.timedelta(seconds=0)
-    )
-    
-    sub = String(
-        help="The default transcript for the video, from the Default Timed Transcript field on the Basic tab. This transcript should be in English. You don't have to change this setting.",
-        display_name="Default Timed Transcript",
-        scope=Scope.settings,
-        default=""
-    )
-    
-    show_captions = Boolean(
-        help="Specify whether the transcripts appear with the video by default.",
-        display_name="Show Transcript",
-        scope=Scope.settings,
-        default=True
+        default="00:00:00"
     )
 
     def resource_string(self, path):
@@ -163,94 +109,6 @@ class DmCloud(XBlock):
         """
         Player view, displayed to the student
         """
-        transcript_language = u'en'
-        languages = {'en': 'English'}
-        sorted_languages = OrderedDict(sorted(languages.items(), key=itemgetter(1)))
-        
-        
-        ### LOAD Edx video template
-        test_data = {
-            'transcript_language': "", 
-            'display_name': "Video", 
-            'yt_test_url': 'gdata.youtube.com/feeds/api/videos/', 
-            'general_speed': 1.0, 
-            'sources': {"mp4": u'http://vjs.zencdn.net/v/oceans.mp4',"webm": u'http://vjs.zencdn.net/v/oceans.webm', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'}, 
-            'show_captions': 'false', 
-            'transcript_download_format': 'srt', 
-            'speed': 'null', 
-            'id': self.location.html_id(), 
-            'transcript_languages': json.dumps({}), 
-            'data_dir': None, 
-            'sub': u'', 
-            'start': 0.0, 
-            'track': None, 
-            'yt_api_url': 'www.youtube.com/iframe_api', 
-            'transcript_download_formats_list': [{'display_name': 'SubRip (.srt) file', 'value': 'srt'}, {'display_name': 'Text (.txt) file', 'value': 'txt'}], 
-            'ajax_url': self.runtime.handler_url(self, 'studio_submit'), 
-            'end': 0.0, 
-            'youtube_streams': u'1.00:oceans.webm', 
-            'yt_test_timeout': 1500, 
-            'transcript_available_translations_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/transcript/available_translations', 
-            'transcript_translation_url': '/preview/xblock/i4x:;_;_CNAM;_CNAM002;_video;_ab312a5f718547ef94d4d979d96d7cf9/handler/transcript/translation', 
-            'handout': None, 
-            'saved_video_position': 0.0, 
-            'autoplay': False
-            }
-        
-        #print "CONTEXT : %s" %context
-        
-        #context.update(test_data)
-        
-        data = {
-            'ajax_url': "",
-            'autoplay': False,
-            # This won't work when we move to data that
-            # isn't on the filesystem
-            'data_dir': None,
-            'display_name': self.display_name,
-            'end': 0,
-            'handout': "",
-            'id': self.location.html_id(),
-            'show_captions': json.dumps(self.show_captions),
-            'sources': {u'mp4': u'http://vjs.zencdn.net/v/oceans.mp4',u'webm': u'http://vjs.zencdn.net/v/oceans.webm', 'main': u'http://vjs.zencdn.net/v/oceans.mp4'},
-            'speed': json.dumps(float(1)),
-            'general_speed': float(1),
-            'saved_video_position': self.saved_video_position.total_seconds(),
-            'start': 0,
-            'sub': self.sub,
-            'track': "",
-            'youtube_streams': "",
-            # TODO: Later on the value 1500 should be taken from some global
-            # configuration setting field.
-            'yt_test_timeout': 1500,
-            'yt_api_url': settings.YOUTUBE['API'],
-            'yt_test_url': settings.YOUTUBE['TEST_URL'],
-            'transcript_download_format': "",
-            'transcript_download_formats_list': None,
-            'transcript_language': transcript_language,
-            'transcript_languages': json.dumps(sorted_languages),
-            'transcript_translation_url': self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
-            'transcript_available_translations_url': self.runtime.handler_url(self, 'transcript', 'available_translations').rstrip('/?'),
-        }
-        
-        html = render_to_string('video.html', test_data, None, "lms.main")
-        
-        frag = Fragment(html)
-        for css in self.css.get('scss'):
-            frag.add_css(css)
-        #print 20*"*"
-        #print self.js.get('js')
-        #print 20*"*"
-        #for js in self.js.get('js'):
-        #    frag.add_javascript(js)
-            
-        #frag.initialize_js('Video')
-        #frag.add_css(self.resource_string("public/css/dmcloud.css"))
-        frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
-        #frag.initialize_js('DmCloud')
-        frag.initialize_js('DmCloudVideo')
-        
-        return frag
         
         ###
         # VIDEO MODULE
@@ -259,19 +117,43 @@ class DmCloud(XBlock):
         frag = Fragment()
         embed_url = ""
         stream_url = ""
+        download_url = ""
+        thumbnail_url = ""
+        subs_url = {}
         if self.id_video != "":
             try:
                 embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                assets = self.cloudkey.media.get_assets(id=self.id_video)
+                #print 20*"-"
+                #for k in assets:
+                #    print "KEY : %s" %k
+                #    print "VAL : %s" %assets[k]
+                #print 20*"-"
+                thumbnail_url = assets['jpeg_thumbnail_source']['stream_url']
+                #print 20*"-"
+                subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
                 if self.allow_download_video :
-                    stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True)
+                    download_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
             except:
                 pass
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'url': embed_url,
-            'stream_url' : stream_url
+            'download_url': download_url,
+            'stream_url' : stream_url,
+            'subs_url' : subs_url,
+            'thumbnail_url' :thumbnail_url,
+            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?')
         }))
+        
         frag.add_css(self.resource_string("public/css/dmcloud.css"))
+        #frag.add_css_url(self.runtime.local_resource_url(self, 'public/js/video-js/video-js.css'))
+        frag.add_css_url("http://vjs.zencdn.net/4.6/video-js.css")
+        frag.add_javascript_url("http://vjs.zencdn.net/4.6/video.js")
+        frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
+        frag.initialize_js('DmCloudVideo')
+        
         return frag
     
     def studio_view(self, context=None):
@@ -302,6 +184,32 @@ class DmCloud(XBlock):
             }
         return response
     
+    @XBlock.json_handler
+    def save_user_state(self, submissions, suffix=''):
+        print "submissions : %s" %submissions
+        print "suffix : %s" %suffix
+        response = {
+                'result': 'success',
+            }
+        return response
+        
+    @XBlock.handler
+    def transcript(self, request, dispatch):
+        #print "REQUEST GET: %s" %request.GET.get('url')
+        if request.GET.get('url'):
+            import requests
+            r = requests.get(request.GET.get('url'))
+            #print r.headers
+            #print 20*"ok"
+            #print r.text
+            #print 20*"ok"
+            #print r.content
+            response = Response("%s" %r.content)
+            response.content_type = 'text/plain'
+        else:
+            response = Response(status=404)
+        return response
+        
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
