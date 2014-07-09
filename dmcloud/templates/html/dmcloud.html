@@ -7,10 +7,11 @@
 <link href="//vjs.zencdn.net/4.6/video-js.css" rel="stylesheet">
 <script src="//vjs.zencdn.net/4.6/video.js"></script>
 -->
-<p>
+
     {% if self.id_video %}
     {% if self.cloudkey and stream_url != "" %}
-     <video id='video_{{id}}' width="640" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
+    <div class="videoplayer">
+     <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
       controls preload="auto"
       poster="{{thumbnail_url}}">
 
@@ -39,7 +40,16 @@
         <option value="0.7">x0,7 ({% trans "Slower" %})</option>
         <option value="0.5">x0,5 ({% trans "Slower" %})</option>
     </select>
-    
+        {% if self.allow_download_video %}
+            {% if download_url != "" %}
+                <ul class="wrapper-downloads">
+                    <li class="video-sources video-download-button">
+                    <a href="{{download_url}}" target="_blank" download>{% trans "Download" %}</a>
+                    </li>
+                </ul>
+            {%endif%}
+        {%endif%}
+    </div>
     <div id="subtitle">&nbsp;</div>
     
     {%else%}
@@ -50,14 +60,5 @@
     {%endif%}
     
     
-    {% if self.allow_download_video %}
-        {% if download_url != "" %}
-            <ul class="wrapper-downloads">
-                <li class="video-sources video-download-button">
-                <a href="{{download_url}}" target="_blank" download>{% trans "Download" %}</a>
-                </li>
-            </ul>
-        {%endif%}
-    {%endif%}
-</p>
+
 </div>
