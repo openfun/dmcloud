@@ -14,7 +14,7 @@ function DmCloudVideo(runtime, element) {
         myPlayer=this;
         myPlayer.on('subtitlestrackchange', function(){
             console.log("subtitlestrackchange");
-            //console.log($(myPlayer.getChild('textTrackDisplay')));
+            console.log($(myPlayer.getChild('textTrackDisplay')));
             console.log(myPlayer.getChild('textTrackDisplay')); // -> getChild
             //console.log(myPlayer.getChild('textTrack'));
             //console.log(myPlayer.getChild('textTrackDisplay').cues());
