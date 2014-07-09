@@ -10,7 +10,7 @@
 <p>
     {% if self.id_video %}
     {% if self.cloudkey and stream_url != "" %}
-     <video id='my_video' width="640" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
+     <video id='video_{{id}}' width="640" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
       controls preload="auto"
       poster="{{thumbnail_url}}">
 
@@ -32,14 +32,16 @@
       </p>
      -->
     </video>
-    <!--
-    <script>
-        videojs("my_video", {}, function(){
-          // Player (this) is initialized and ready.
-          alert('ok2');
-        });
-    </script>
-    -->
+    <select id='select_{{id}}' class="custom-dropdown__select custom-dropdown__select--white">
+        <option value="2">x2 ({% trans "Faster" %})</option>
+        <option value="1.5">x1,5({% trans "Faster" %})</option>
+        <option value="1" selected>{% trans "Real time" %}</option>
+        <option value="0.7">x0,7 ({% trans "Slower" %})</option>
+        <option value="0.5">x0,5 ({% trans "Slower" %})</option>
+    </select>
+    
+    <div id="subtitle">&nbsp;</div>
+    
     {%else%}
         {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
         {%endif%}

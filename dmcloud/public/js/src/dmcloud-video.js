@@ -2,16 +2,40 @@
 function DmCloudVideo(runtime, element) {
     //console.log($('.xblock-save-button', element));
     
-    var handlerUrl = runtime.handlerUrl(element, 'save_user_state');
+    var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
     //alert('ok1');
+    var video_id = $(element).find('video').attr('id');
+    var select_id = $(element).find('select').attr('id');
     
-    videojs("my_video", {}, function(){
+    var myPlayer;
+    
+    videojs(video_id, {}, function(){
         // Player (this) is initialized and ready.
-        //alert('ok2');
+        myPlayer=this;
+        myPlayer.on('subtitlestrackchange', function(){
+            console.log("subtitlestrackchange");
+            //console.log($(myPlayer.getChild('textTrackDisplay')));
+            console.log(myPlayer.getChild('textTrackDisplay')); // -> getChild
+            //console.log(myPlayer.getChild('textTrack'));
+            //console.log(myPlayer.getChild('textTrackDisplay').cues());
+            
+        });
+        myPlayer.on('cuechange', function(){
+            console.log("cuechange");
+        });
     });
     
     $(function ($) {
-        /* Here's where you'd do things on page load. */
-        //alert('page load');
+        
     });
+    
+    /**
+    Speed video rate
+    **/
+    $("#"+select_id).change(function() {
+        //console.log($( this ).val());
+        myPlayer.playbackRate($( this ).val());
+    });
+    
 }
+

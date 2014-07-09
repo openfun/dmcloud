@@ -139,6 +139,7 @@ class DmCloud(XBlock):
                 pass
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
+            'id': self.location.html_id(),
             'url': embed_url,
             'download_url': download_url,
             'stream_url' : stream_url,
@@ -150,7 +151,8 @@ class DmCloud(XBlock):
         frag.add_css(self.resource_string("public/css/dmcloud.css"))
         #frag.add_css_url(self.runtime.local_resource_url(self, 'public/js/video-js/video-js.css'))
         frag.add_css_url("http://vjs.zencdn.net/4.6/video-js.css")
-        frag.add_javascript_url("http://vjs.zencdn.net/4.6/video.js")
+        #frag.add_javascript_url("http://vjs.zencdn.net/4.6/video.js")
+        frag.add_javascript_url("http://pod.univ-lille1.fr/static/video-js/video.dev.js");
         frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
         frag.initialize_js('DmCloudVideo')
         
