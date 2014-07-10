@@ -1,14 +1,16 @@
 /* CSS for DmCloud */
-#subtitle {
+.subtitle {
     width:49%;
     float:right;
     height:360px;
     overflow-y:auto;
+    display:none;
 }
-#subtitle span.current {
+.subtitle span.current {
     color:red;
+    font-weight:bold;
 }
-#subtitle span {
+.subtitle span {
     cursor:  pointer;
 }
 .videoplayer{

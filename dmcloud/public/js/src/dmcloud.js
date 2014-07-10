@@ -1,12 +1,10 @@
 /* Javascript for DmCloud. */
 function DmCloud(runtime, element) {
     //console.log($('.xblock-save-button', element));
-    
-
     var handlerUrl = runtime.handlerUrl(element, 'studio_submit');
     
     $('.save-button', element).bind('click', function() {
-        if($('#video_id').val()!='')
+        if($('#video_id').val()!='') {
             var data = {
                 'display_name': $('#edit_display_name').val(),
                 'id_video': $('#video_id').val(),

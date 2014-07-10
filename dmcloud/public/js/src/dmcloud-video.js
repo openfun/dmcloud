@@ -1,62 +1,95 @@
-/* Javascript for DmCloud. */
-var myPlayer;
-var saveHandlerUrl;
+/* Javascript for DmCloud video. */
 function DmCloudVideo(runtime, element) {
     //console.log($('.xblock-save-button', element));
+    var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
     
-    saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
-    //alert('ok1');
+    var myPlayer;
     var video_id = $(element).find('video').attr('id');
     var select_id = $(element).find('select').attr('id');
+    var subtitle_id = $(element).find('.subtitle').attr('id');
+    var videoplayer_id = $(element).find('.videoplayer').attr('id');
     
+    var showCues = function(cues) {
+        $("#"+videoplayer_id).attr('style','width:50%;float:left');
+    
+        $("#"+subtitle_id).show();
+        //$("#subtitle").attr('style', 'width:49%; float:right');
+        document.getElementById(subtitle_id).innerHTML = "<br/>";
+        for (var j = 0; j < cues.length; ++j) {
+            var cue = cues[j];
+            // do something
+            document.getElementById(subtitle_id).innerHTML += ("<span id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
+        }
+        //onclick=\"myPlayer.currentTime("+cue.startTime+")
+        $("#"+subtitle_id+" span").click(function() {
+          myPlayer.currentTime($(this).attr('begin'));
+        });
+    }
+    
+    var save_user_state = function() {
+        var data = {
+            'saved_video_position': parseInt(myPlayer.currentTime()),
+        };
+        $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
+            //window.location.reload(false);
+            //console.log("ok");
+        });
+    }
+    
+    console.log('video_id : '+video_id);
     
     var trackload = new Array();
     
-    if(video_id) {
-        videojs(video_id, {}, function(){
-            // Player (this) is initialized and ready.
-            myPlayer=this;
-            //save_user_state
-            myPlayer.on('seeked', save_user_state);
-            myPlayer.on('ended', save_user_state);
-            myPlayer.on('pause', save_user_state);
-            //Load tracks
-            var tracks = myPlayer.textTracks();
-            for (var i = 0; i < tracks.length; i++) {
-                var track = tracks[i]; // or whichever track you need
-                track.on('loaded', function(){
-                    trackload[this.id()]=this.cues();
-                    showCues(this.cues());
+    $(function ($) {
+        /* Here's where you'd do things on page load. */
+        console.log('FUNCTION '+video_id);
+        
+        if(video_id) {
+            videojs(video_id, {}, function(){
+                // Player (this) is initialized and ready.
+                myPlayer=this;
+                //save_user_state
+                myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
+                myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
+                myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+                //Load tracks
+                var tracks = myPlayer.textTracks();
+                for (var i = 0; i < tracks.length; i++) {
+                    var track = tracks[i]; // or whichever track you need
+                    track.on('loaded', function(){
+                        trackload[this.id()]=this.cues();
+                        showCues(this.cues());
+                    });
+                }
+                myPlayer.on('subtitlestrackchange', function(){
+                    //ChangeClassVideoJS
+                    var kids = myPlayer.getChild('textTrackDisplay').children();
+                    if(kids && kids.length > 0) {
+                        if(trackload[kids[0].id()]) showCues(trackload[kids[0].id()]);
+                    } else {
+                        $("#"+videoplayer_id).attr('style','width:100%');
+                        $("#"+subtitle_id).hide();
+                    }
+                    //track.on('activate', function(){ console.log("activate"); console.log($(this)); });
                 });
-            }
-            myPlayer.on('subtitlestrackchange', function(){
-                //ChangeClassVideoJS
-                var kids = myPlayer.getChild('textTrackDisplay').children();
-                if(kids && kids.length > 0) {
-                    if(trackload[kids[0].id()]) showCues(trackload[kids[0].id()]);
-                } else {
-                    $(".videoplayer").attr('style','width:100%');
-                    $("#subtitle").hide();
-                }
-                //track.on('activate', function(){ console.log("activate"); console.log($(this)); });
+                myPlayer.on('cuechange', function(){
+                    //console.log("cuechange");
+                    $("#"+subtitle_id+" span").removeClass("current");
+                    var tabActiveCues = myPlayer.getChild('textTrackDisplay').children()[0].activeCues();
+                    var lastcueid=0;
+                    for (cue in tabActiveCues) {
+                        $("#"+subtitle_id+"_cue_"+tabActiveCues[cue].id).addClass("current");
+                        lastcueid = tabActiveCues[cue].id;
+                    }
+                    if(lastcueid > 0 && $("#"+subtitle_id+"_cue_"+lastcueid).length) {
+                        $("#"+subtitle_id).animate({
+                            scrollTop:  $("#"+subtitle_id).scrollTop() - $("#"+subtitle_id).offset().top + $("#"+subtitle_id+"_cue_"+lastcueid).offset().top 
+                        }, 500);
+                    }
+                });
             });
-            myPlayer.on('cuechange', function(){
-                //console.log("cuechange");
-                $("#subtitle span").removeClass("current");
-                var tabActiveCues = myPlayer.getChild('textTrackDisplay').children()[0].activeCues();
-                var lastcueid=0;
-                for (cue in tabActiveCues) {
-                    $("#cue_"+tabActiveCues[cue].id).addClass("current");
-                    lastcueid = tabActiveCues[cue].id;
-                }
-                if(lastcueid > 0 && $("#cue_"+lastcueid).length) {
-                    $('#subtitle').animate({
-                        scrollTop:  $('#subtitle').scrollTop() - $('#subtitle').offset().top + $("#cue_"+lastcueid).offset().top 
-                    }, 500);
-                }
-            });
-        });
-    }//end if video_id
+        }//end if video_id
+    });
     
     /**
     Speed video rate
@@ -65,19 +98,7 @@ function DmCloudVideo(runtime, element) {
         //console.log($( this ).val());
         myPlayer.playbackRate($( this ).val());
     });
-}
-
-function showCues(cues) {
-    //console.log("SHOW CUE");
-    $(".videoplayer").attr('style','width:50%;float:left');
-    $("#subtitle").show();
-    //$("#subtitle").attr('style', 'width:49%; float:right');
-    document.getElementById("subtitle").innerHTML = "<br/>";
-    for (var j = 0; j < cues.length; ++j) {
-        var cue = cues[j];
-        // do something
-        document.getElementById("subtitle").innerHTML += ("<span id=\"cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" onclick=\"myPlayer.currentTime("+cue.startTime+")\">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
-    }
+    
 }
 
 function showTime(totalSec) {
@@ -86,14 +107,4 @@ function showTime(totalSec) {
     var seconds = totalSec % 60;
     var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
     return result;
-}
-
-function save_user_state() {
-    var data = {
-        'saved_video_position': parseInt(myPlayer.currentTime()),
-    };
-    $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
-        //window.location.reload(false);
-        //console.log("ok");
-    });
 }

@@ -10,28 +10,12 @@
 
     {% if self.id_video %}
     {% if self.cloudkey and stream_url != "" %}
-    <div class="videoplayer">
-     <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered"
-      controls preload="auto"
-      poster="{{thumbnail_url}}">
-
-      <source id='mp4' 
-        src="{{stream_url}}"
-        type='video/mp4'>
-        
+    <div class="videoplayer"  id="videoplayer_{{id}}">
+     <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}">
+      <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
         {% for lang, url in subs_url.items %}
         <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
         {%endfor%}
-        
-    <!--
-      <p>
-        {% if url != "" %}
-        <iframe width="640" height="360" frameborder="0" scrolling="no" src="{{url}}"></iframe>
-        {%else%}
-        {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
-        {%endif%}
-      </p>
-     -->
     </video>
     <label for="select_{{id}}">{% trans "Change current speed" %}</label>
     <select id='select_{{id}}' class="custom-dropdown__select custom-dropdown__select--white">
@@ -51,7 +35,7 @@
             {%endif%}
         {%endif%}
     </div>
-    <div id="subtitle">&nbsp;</div>
+    <div class="subtitle" id="subtitle_{{id}}">&nbsp;</div>
     
     {%else%}
         {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
