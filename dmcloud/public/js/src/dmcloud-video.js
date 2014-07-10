@@ -1,9 +1,10 @@
 /* Javascript for DmCloud. */
 var myPlayer;
+var saveHandlerUrl;
 function DmCloudVideo(runtime, element) {
     //console.log($('.xblock-save-button', element));
     
-    var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
+    saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
     //alert('ok1');
     var video_id = $(element).find('video').attr('id');
     var select_id = $(element).find('select').attr('id');
@@ -11,51 +12,51 @@ function DmCloudVideo(runtime, element) {
     
     var trackload = new Array();
     
-    videojs(video_id, {}, function(){
-        // Player (this) is initialized and ready.
-        myPlayer=this;
-        
-        var tracks = myPlayer.textTracks();
-        for (var i = 0; i < tracks.length; i++) {
-            var track = tracks[i]; // or whichever track you need
-            track.on('loaded', function(){
-                trackload[this.id()]=this.cues();
-                showCues(this.cues());
+    if(video_id) {
+        videojs(video_id, {}, function(){
+            // Player (this) is initialized and ready.
+            myPlayer=this;
+            //save_user_state
+            myPlayer.on('seeked', save_user_state);
+            myPlayer.on('ended', save_user_state);
+            myPlayer.on('pause', save_user_state);
+            //Load tracks
+            var tracks = myPlayer.textTracks();
+            for (var i = 0; i < tracks.length; i++) {
+                var track = tracks[i]; // or whichever track you need
+                track.on('loaded', function(){
+                    trackload[this.id()]=this.cues();
+                    showCues(this.cues());
+                });
+            }
+            myPlayer.on('subtitlestrackchange', function(){
+                //ChangeClassVideoJS
+                var kids = myPlayer.getChild('textTrackDisplay').children();
+                if(kids && kids.length > 0) {
+                    if(trackload[kids[0].id()]) showCues(trackload[kids[0].id()]);
+                } else {
+                    $(".videoplayer").attr('style','width:100%');
+                    $("#subtitle").hide();
+                }
+                //track.on('activate', function(){ console.log("activate"); console.log($(this)); });
             });
-            //track.on('activate', function(){ console.log("activate"); console.log($(this)); });
-        }
-        
-        myPlayer.on('subtitlestrackchange', function(){
-            //ChangeClassVideoJS
-            var kids = myPlayer.getChild('textTrackDisplay').children();
-            if(kids && kids.length > 0) {
-                if(trackload[kids[0].id()]) showCues(trackload[kids[0].id()]);
-            } else {
-                $(".videoplayer").attr('style','width:100%');
-                $("#subtitle").hide();
-            }
+            myPlayer.on('cuechange', function(){
+                //console.log("cuechange");
+                $("#subtitle span").removeClass("current");
+                var tabActiveCues = myPlayer.getChild('textTrackDisplay').children()[0].activeCues();
+                var lastcueid=0;
+                for (cue in tabActiveCues) {
+                    $("#cue_"+tabActiveCues[cue].id).addClass("current");
+                    lastcueid = tabActiveCues[cue].id;
+                }
+                if(lastcueid > 0 && $("#cue_"+lastcueid).length) {
+                    $('#subtitle').animate({
+                        scrollTop:  $('#subtitle').scrollTop() - $('#subtitle').offset().top + $("#cue_"+lastcueid).offset().top 
+                    }, 500);
+                }
+            });
         });
-        myPlayer.on('cuechange', function(){
-            //console.log("cuechange");
-            $("#subtitle span").removeClass("current");
-            var tabActiveCues = myPlayer.getChild('textTrackDisplay').children()[0].activeCues();
-            var lastcueid=0;
-            for (cue in tabActiveCues) {
-                $("#cue_"+tabActiveCues[cue].id).addClass("current");
-                lastcueid = tabActiveCues[cue].id;
-            }
-            if(lastcueid > 0 && $("#cue_"+lastcueid).length) {
-                $('#subtitle').animate({
-                    scrollTop:  $('#subtitle').scrollTop() - $('#subtitle').offset().top + $("#cue_"+lastcueid).offset().top 
-                }, 500);
-            }
-            //console.log(myPlayer.getChild('textTrackDisplay').children()[0].activeCues());
-        });
-    });
-    
-    $(function ($) {
-        
-    });
+    }//end if video_id
     
     /**
     Speed video rate
@@ -64,7 +65,6 @@ function DmCloudVideo(runtime, element) {
         //console.log($( this ).val());
         myPlayer.playbackRate($( this ).val());
     });
-    
 }
 
 function showCues(cues) {
@@ -86,4 +86,14 @@ function showTime(totalSec) {
     var seconds = totalSec % 60;
     var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
     return result;
+}
+
+function save_user_state() {
+    var data = {
+        'saved_video_position': parseInt(myPlayer.currentTime()),
+    };
+    $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
+        //window.location.reload(false);
+        //console.log("ok");
+    });
 }

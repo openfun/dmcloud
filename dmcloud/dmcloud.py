@@ -64,16 +64,16 @@ class DmCloud(XBlock):
 
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
-    
+    """
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
         display_name=_("Component Display Name"),
         default="Dm Cloud Video",
         scope=Scope.settings
     )
-    
+    """
     id_video = String(
-        scope=Scope.content,
+        scope=Scope.settings,
         help=_('Fill this with the ID of the video found on DM Cloud'),
         default="",
         display_name=_('Video ID')
@@ -86,10 +86,10 @@ class DmCloud(XBlock):
         default=False
     )
     
-    saved_video_position = String(
+    saved_video_position = Integer(
         help="Current position in the video.",
         scope=Scope.user_state,
-        default="00:00:00"
+        default=0
     )
 
     def resource_string(self, path):
@@ -188,8 +188,9 @@ class DmCloud(XBlock):
     
     @XBlock.json_handler
     def save_user_state(self, submissions, suffix=''):
-        print "submissions : %s" %submissions
-        print "suffix : %s" %suffix
+        print u'Received submissions: {}'.format(submissions)
+        log.info(u'Received submissions: {}'.format(submissions))
+        self.saved_video_position = submissions['saved_video_position']
         response = {
                 'result': 'success',
             }
