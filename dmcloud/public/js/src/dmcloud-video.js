@@ -11,8 +11,8 @@ function DmCloudVideo(runtime, element) {
     
     var showCues = function(cues) {
         $("#"+videoplayer_id).attr('style','width:50%;float:left');
-    
-        $("#"+subtitle_id).show();
+        $("#"+subtitle_id).attr('style','width:49%;display:block');
+        //$("#"+subtitle_id).show();
         //$("#subtitle").attr('style', 'width:49%; float:right');
         document.getElementById(subtitle_id).innerHTML = "<span class=\"togglesub\">&nbsp;</span><br/>"; //Open/Close
         
