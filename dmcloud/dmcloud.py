@@ -65,6 +65,7 @@ class DmCloud(XBlock):
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
     """
+    #display name already defined by xblock
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
         display_name=_("Component Display Name"),
@@ -137,9 +138,7 @@ class DmCloud(XBlock):
                     download_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
             except:
                 pass
-        print "runtime"
-        print self.runtime
-        
+                
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
@@ -148,13 +147,15 @@ class DmCloud(XBlock):
             'stream_url' : stream_url,
             'subs_url' : subs_url,
             'thumbnail_url' :thumbnail_url,
-            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?')
+            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
+            "subtitles_img" : self.runtime.local_resource_url(self, 'public/images/subtitles.png')
         }))
         
         frag.add_css(self.resource_string("public/css/dmcloud.css"))
         #frag.add_css_url(self.runtime.local_resource_url(self, 'public/js/video-js/video-js.css'))
         #frag.add_css(self.resource_string("public/videojs-4.6/video-js.css"))
         frag.add_css_url("http://vjs.zencdn.net/4.6/video-js.css")
+        #load locally to work with more than one instance on page
         frag.add_javascript(self.resource_string("public/videojs-4.6/video.js"))
         
         frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
@@ -206,11 +207,6 @@ class DmCloud(XBlock):
         if request.GET.get('url'):
             import requests
             r = requests.get(request.GET.get('url'))
-            #print r.headers
-            #print 20*"ok"
-            #print r.text
-            #print 20*"ok"
-            #print r.content
             response = Response("%s" %r.content)
             response.content_type = 'text/plain'
         else:

@@ -1,11 +1,23 @@
 /* CSS for DmCloud */
 .subtitle {
     width:49%;
-    float:right;
-    height:360px;
+    /*float:right;*/
+    position:relative;
+    right:1px;
+    height:355px;
     overflow-y:auto;
     display:none;
+    border:1px solid grey;
+    padding:2px;
+    background-color:#f2f2f2;
 }
+.subtitle span.togglesub {
+    float:right;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAImrAACHtQABAbEAAIDDAABhBAABA7IAADglAAAb4KZXaoEAAACUSURBVHja5JVBDYRADEVfNwhACusAnIADJICCRQoOwAE4YRwMl5I0XMskQ/ZfOv/y07ymHYkxkkIfEkmAwfgJKIH2iWDLotG6ZIuiAEbjd0UxkqsEOLRLgK/WzZkbChPK7e1ReR9eIHcJ0CuCYBak9zJ+54LMBsW1IKsXRdLhWZ6ddvz7v+smQG38qigqd/Dr/rxzAN0gHjr/p3LbAAAAAElFTkSuQmCC);
+    width:25px;
+    height:24px;
+}
+
 .subtitle span.current {
     color:red;
     font-weight:bold;
@@ -16,4 +28,10 @@
 .videoplayer{
     width:100%;
 }
-    
+/*
+.playermid {
+    width:50%;
+    position:absolute;
+    left:0;
+}
+*/ 

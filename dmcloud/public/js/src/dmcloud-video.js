@@ -14,15 +14,29 @@ function DmCloudVideo(runtime, element) {
     
         $("#"+subtitle_id).show();
         //$("#subtitle").attr('style', 'width:49%; float:right');
-        document.getElementById(subtitle_id).innerHTML = "<br/>";
+        document.getElementById(subtitle_id).innerHTML = "<span class=\"togglesub\">&nbsp;</span><br/>"; //Open/Close
+        
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
             // do something
-            document.getElementById(subtitle_id).innerHTML += ("<span id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
+            document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
         }
         //onclick=\"myPlayer.currentTime("+cue.startTime+")
-        $("#"+subtitle_id+" span").click(function() {
-          myPlayer.currentTime($(this).attr('begin'));
+        $("#"+subtitle_id+" span.cue").click(function() {
+            console.log("cue");
+            myPlayer.currentTime($(this).attr('begin'));
+        });
+        
+        $("#"+subtitle_id+" span.togglesub").click(function() {
+            if($("#"+subtitle_id+" span.cue").is(':visible')) {
+              $("#"+subtitle_id+" span.cue").hide();
+              $("#"+videoplayer_id).attr('style','width:100%;float:left');
+              $("#"+subtitle_id).attr('style','width:30px;display:block;height:20px;overflow:hidden;position:absolute');
+            } else {
+              $("#"+subtitle_id+" span.cue").show();
+              $("#"+videoplayer_id).attr('style','width:50%;float:left');
+              $("#"+subtitle_id).attr('style','width:49%;display:block');
+            }
         });
     }
     
@@ -35,14 +49,9 @@ function DmCloudVideo(runtime, element) {
             //console.log("ok");
         });
     }
-    
-    console.log('video_id : '+video_id);
-    
-    var trackload = new Array();
-    
+    var trackload = new Array(); // array contening tacks id and cues
     $(function ($) {
         /* Here's where you'd do things on page load. */
-        console.log('FUNCTION '+video_id);
         
         if(video_id) {
             videojs(video_id, {}, function(){
