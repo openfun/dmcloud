@@ -15,7 +15,7 @@
             <label class="label setting-label" for="video_id">{% trans "Video ID"%}</label>
             <input class="input setting-input" id="video_id" value="{{self.id_video}}" type="text">
           </div>
-          <span class="tip setting-help">{% trans "Fill this with the ID of the video found on DM Cloud"%}</span>
+          <span class="tip setting-help">{% trans "Fill this with the ID of the video found on DM Cloud"%}<br/>-{{self.fields.id_video.help}}-{{self.fields.id_video.name}}-{{self.fields.id_video.display_name}}</span>
       </li>
     <li class="field comp-setting-entry metadata_entry is-set">
            <div class="wrapper-comp-setting">

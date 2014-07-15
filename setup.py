@@ -5,7 +5,6 @@
 import os
 from setuptools import setup
 
-
 # Functions #########################################################
 
 def package_data(pkg, root_list):
@@ -17,7 +16,6 @@ def package_data(pkg, root_list):
                 data.append(os.path.relpath(os.path.join(dirname, fname), pkg))
 
     return {pkg: data}
-
 
 # Main ##############################################################
 
@@ -37,5 +35,5 @@ setup(
         ]
     },
     #package_data=package_data("dmcloud", "static"),
-    package_data=package_data("dmcloud", ["templates", "public"]),
+    package_data=package_data("dmcloud", ["templates", "public", "locale"]), 
 )

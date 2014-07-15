@@ -7,7 +7,42 @@ import pkg_resources
 from pkg_resources import resource_string
 import logging
 
-from django.utils.translation import ugettext as _
+#from django.utils.translation import ugettext as _
+#from gettext import ugettext as _
+#import i18n
+#_ = i18n.language.ugettext #use ugettext instead of getttext to avoid unicode errors
+import gettext
+import os
+
+
+# Set up message catalog access
+
+"""
+import locale
+import gettext
+import os
+
+current_locale, encoding = locale.getdefaultlocale()
+print [current_locale]
+locale_path = 'locale/'
+
+language = gettext.translation ('dmcloud', '/edx/app/edxapp/venvs/edxapp/lib/python2.7/site-packages/dmcloud_xblock-0.2-py2.7.egg/dmcloud/locale/', ["fr"]+[current_locale] )
+language.install()
+
+
+"""
+from django.utils import *
+#print " CURRENT : %s" %translation.get_language()
+LANGUAGE=translation.get_language()
+t = gettext.translation('dmcloud', os.path.join(os.path.dirname(os.path.realpath(__file__)), 'locale'), languages=[LANGUAGE], fallback=True)
+
+print t
+print t.info()
+print t.output_charset()
+print t.charset()
+
+_ = t.ugettext
+print _('Fill this with the ID of the video found on DM Cloud')
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
@@ -138,7 +173,7 @@ class DmCloud(XBlock):
                     download_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
             except:
                 pass
-                
+        
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
@@ -184,7 +219,7 @@ class DmCloud(XBlock):
         else:
             log.info(u'Received submissions: {}'.format(submissions))
             self.display_name = submissions['display_name']
-            self.id_video = submissions['id_video']
+            self.id_video = submissions['id_video'].strip()
             self.allow_download_video = submissions['allow_download_video']
             response = {
                 'result': 'success',
