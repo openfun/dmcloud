@@ -57,6 +57,13 @@ function DmCloudVideo(runtime, element) {
             videojs(video_id, {}, function(){
                 // Player (this) is initialized and ready.
                 myPlayer=this;
+                
+                //console.log($("#"+myPlayer.id()).children(':first').is("object"));
+                if($("#"+myPlayer.id()).children(':first').is("object")) {
+                    $("#"+select_id).hide();
+                    $('label[for="'+select_id+'"]').hide();
+                }
+                
                 //save_user_state
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
