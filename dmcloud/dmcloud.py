@@ -132,7 +132,6 @@ class DmCloud(XBlock):
         """
         Player view, displayed to the student
         """
-        
         ###
         # VIDEO MODULE
         #
@@ -169,8 +168,7 @@ class DmCloud(XBlock):
             'stream_url' : stream_url,
             'subs_url' : subs_url,
             'thumbnail_url' :thumbnail_url,
-            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
-            "subtitles_img" : self.runtime.local_resource_url(self, 'public/images/subtitles.png')
+            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?')
         }))
         
         frag.add_css(self.resource_string("public/css/dmcloud.css"))
