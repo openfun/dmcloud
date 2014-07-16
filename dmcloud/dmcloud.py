@@ -18,7 +18,7 @@ t = gettext.translation('dmcloud', os.path.join(os.path.dirname(os.path.realpath
 _ = t.ugettext
 
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String, Boolean, Float
+from xblock.fields import Scope, Integer, String, Boolean
 
 from xblock.fragment import Fragment
 from django.template import Context, Template
@@ -101,18 +101,18 @@ class DmCloud(XBlock):
         default=0
     )
     
-    playback_rate = Float(
+    playback_rate = String(
         display_name=_("Playback rate"),
         help=_("Change current speed of the video"),
         scope=Scope.user_state,
         values=[
-            {'name': "2 (%s)"%_("Faster"), 'val': 2.0},
-            {'name': "1.5 (%s)"%_("Faster"), 'val': 1.5},
-            {'name': "%s"%_("Real time"), 'val': 1.0},
-            {'name': "0.7 (%s)"%_("Slower"), 'val': 0.7},
-            {'name': "0.5 (%s)"%_("Slower"), 'val': 0.5},
+            {'name': "2 (%s)"%_("Faster"), 'val': "2.0"},
+            {'name': "1.5 (%s)"%_("Faster"), 'val': "1.5"},
+            {'name': "%s"%_("Real time"), 'val': "1.0"},
+            {'name': "0.7 (%s)"%_("Slower"), 'val': "0.7"},
+            {'name': "0.5 (%s)"%_("Slower"), 'val': "0.5"},
         ],
-        default=1.0
+        default="1.0"
         )
 
     def resource_string(self, path):
