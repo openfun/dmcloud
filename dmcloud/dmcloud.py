@@ -13,7 +13,6 @@ import os
 
 # Set up message catalog access
 from django.utils import translation as trans
-#print " CURRENT : %s" %trans.get_language()
 LANGUAGE=trans.get_language()
 t = gettext.translation('dmcloud', os.path.join(os.path.dirname(os.path.realpath(__file__)), 'locale'), languages=[LANGUAGE], fallback=True)
 _ = t.ugettext
@@ -74,7 +73,7 @@ class DmCloud(XBlock):
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
     
-    #display name already defined by xblock - we just redefined to update translation
+    #display name already defined by xblock - we just redefined it to update translation
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
         display_name=_("Component Display Name"),
