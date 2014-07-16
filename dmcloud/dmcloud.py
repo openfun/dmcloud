@@ -8,44 +8,18 @@ from pkg_resources import resource_string
 import logging
 
 #from django.utils.translation import ugettext as _
-#from gettext import ugettext as _
-#import i18n
-#_ = i18n.language.ugettext #use ugettext instead of getttext to avoid unicode errors
 import gettext
 import os
-
 
 # Set up message catalog access
-
-"""
-import locale
-import gettext
-import os
-
-current_locale, encoding = locale.getdefaultlocale()
-print [current_locale]
-locale_path = 'locale/'
-
-language = gettext.translation ('dmcloud', '/edx/app/edxapp/venvs/edxapp/lib/python2.7/site-packages/dmcloud_xblock-0.2-py2.7.egg/dmcloud/locale/', ["fr"]+[current_locale] )
-language.install()
-
-
-"""
-from django.utils import *
-#print " CURRENT : %s" %translation.get_language()
-LANGUAGE=translation.get_language()
+from django.utils import translation as trans
+#print " CURRENT : %s" %trans.get_language()
+LANGUAGE=trans.get_language()
 t = gettext.translation('dmcloud', os.path.join(os.path.dirname(os.path.realpath(__file__)), 'locale'), languages=[LANGUAGE], fallback=True)
-
-print t
-print t.info()
-print t.output_charset()
-print t.charset()
-
 _ = t.ugettext
-print _('Fill this with the ID of the video found on DM Cloud')
 
 from xblock.core import XBlock
-from xblock.fields import Scope, Integer, String, Boolean
+from xblock.fields import Scope, Integer, String, Boolean, Float
 
 from xblock.fragment import Fragment
 from django.template import Context, Template
@@ -99,15 +73,15 @@ class DmCloud(XBlock):
 
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
-    """
-    #display name already defined by xblock
+    
+    #display name already defined by xblock - we just redefined to update translation
     display_name = String(
         help=_("The name students see. This name appears in the course ribbon and as a header for the video."),
         display_name=_("Component Display Name"),
-        default="Dm Cloud Video",
+        default=_("New video"),
         scope=Scope.settings
     )
-    """
+    
     id_video = String(
         scope=Scope.settings,
         help=_('Fill this with the ID of the video found on DM Cloud'),
@@ -127,6 +101,20 @@ class DmCloud(XBlock):
         scope=Scope.user_state,
         default=0
     )
+    
+    playback_rate = Float(
+        display_name=_("Playback rate"),
+        help=_("Change current speed of the video"),
+        scope=Scope.user_state,
+        values=[
+            {'name': "2 (%s)"%_("Faster"), 'val': 2.0},
+            {'name': "1.5 (%s)"%_("Faster"), 'val': 1.5},
+            {'name': "%s"%_("Real time"), 'val': 1.0},
+            {'name': "0.7 (%s)"%_("Slower"), 'val': 0.7},
+            {'name': "0.5 (%s)"%_("Slower"), 'val': 0.5},
+        ],
+        default=1.0
+        )
 
     def resource_string(self, path):
         """Gets the content of a resource"""

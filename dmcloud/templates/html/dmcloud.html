@@ -1,35 +1,28 @@
 {% load i18n %}
-
-
 <div class="dmcloud_block">
-<!-- <h2 class="video_title">{{self.title}}</h2> -->
-<!--
-<link href="//vjs.zencdn.net/4.6/video-js.css" rel="stylesheet">
-<script src="//vjs.zencdn.net/4.6/video.js"></script>
--->
-
     {% if self.id_video %}
-    {% if self.cloudkey and stream_url != "" %}
-    <div class="videoplayer"  id="videoplayer_{{id}}">
-     <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}">
-      <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
-        {% for lang, url in subs_url.items %}
-        <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
-        {%endfor%}
-    </video>
-    <label for="select_{{id}}">{% trans "Change current speed" %}</label>
-    <select id='select_{{id}}' class="custom-dropdown__select custom-dropdown__select--white">
-        <option value="2">x2 ({% trans "Faster" %})</option>
-        <option value="1.5">x1,5({% trans "Faster" %})</option>
-        <option value="1" selected>{% trans "Real time" %}</option>
-        <option value="0.7">x0,7 ({% trans "Slower" %})</option>
-        <option value="0.5">x0,5 ({% trans "Slower" %})</option>
-    </select>
+        {% if self.cloudkey and stream_url != "" %}
+            <div class="videoplayer"  id="videoplayer_{{id}}">
+                <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}">
+                <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
+                {% for lang, url in subs_url.items %}
+                <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
+                {%endfor%}
+            </video>
+            
+            <label for="select_{{id}}">{{self.fields.playback_rate.display_name}}</label>
+            <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
+            
+                {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
+                    <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
+                {%endfor%}
+            </select>
+    
         {% if self.allow_download_video %}
             {% if download_url != "" %}
                 <ul class="wrapper-downloads">
                     <li class="video-sources video-download-button">
-                    <a href="{{download_url}}" target="_blank" download>{% trans "Download" %}</a>
+                    <a href="{{download_url}}" target="_blank" download>{% trans "Download video" %}</a>
                     </li>
                 </ul>
             {%endif%}
@@ -40,7 +33,7 @@
         {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
         {%endif%}
     {%else%}
-    {% trans "Click on edit to give an ID to load a video" %}
+    {% trans "No ID found" %}
     {%endif%}
 
 </div>
