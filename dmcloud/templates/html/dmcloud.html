@@ -11,13 +11,14 @@
                     <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
                     {%endfor%}
                 </video>
-            
-                <label for="select_{{id}}">{{self.fields.playback_rate.display_name}}</label>
-                <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
-                {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
-                    <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
-                {%endfor%}
-                </select>
+                <span class="playbackrate select_{{id}}">
+                    <label for="select_{{id}}">{{self.fields.playback_rate.display_name}} &nbsp;:&nbsp;</label>
+                    <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
+                    {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
+                        <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
+                    {%endfor%}
+                    </select>
+                </span>
     
             {% if self.allow_download_video %}
                 {% if download_url != "" %}

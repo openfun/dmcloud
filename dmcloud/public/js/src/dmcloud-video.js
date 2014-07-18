@@ -50,16 +50,19 @@ function DmCloudVideo(runtime, element) {
                 myPlayer=this;
                 
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
+                /*
                 if($("#"+myPlayer.id()).children(':first').is("object")) {
                     $("#"+select_id).hide();
                     $('label[for="'+select_id+'"]').hide();
                 }
-                
+                */
                 //save_user_state
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
-                
+                myPlayer.on('firstplay', function(){ 
+                    if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
+                });
                 //Load tracks
                 var tracks = myPlayer.textTracks();
                 for (var i = 0; i < tracks.length; i++) {

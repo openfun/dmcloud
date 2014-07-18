@@ -36,6 +36,18 @@
 .vjs-fullscreen .vjs-text-track-display .vjs-tt-cue {
     font-size: 140%;
 }
+
+.playbackrate {
+    width: 100%;
+    background-color: black;
+    float: right;
+    color: white;
+    text-align: right;
+    display: none;
+    font-size: 0.7em;
+}
+.playbackrate label { color: white; font-size: 1em;}
+
 /*
 .playermid {
     width:50%;
