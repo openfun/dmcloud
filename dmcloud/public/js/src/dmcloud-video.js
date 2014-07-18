@@ -8,36 +8,27 @@ function DmCloudVideo(runtime, element) {
     var select_id = $(element).find('select').attr('id');
     var subtitle_id = $(element).find('.subtitle').attr('id');
     var videoplayer_id = $(element).find('.videoplayer').attr('id');
+    var newtop =0;
     
     var showCues = function(cues) {
-        $("#"+videoplayer_id).attr('style','width:50%;float:left');
-        $("#"+subtitle_id).attr('style','width:49%;display:block');
-        //$("#"+subtitle_id).show();
-        //$("#subtitle").attr('style', 'width:49%; float:right');
-        document.getElementById(subtitle_id).innerHTML = "<span class=\"togglesub\">&nbsp;</span><br/>"; //Open/Close
+        if(!$("."+subtitle_id).is(':visible')) {
+            $("."+subtitle_id).show();
+            $("#"+subtitle_id).show();
+            $("#"+videoplayer_id).attr('style','width:50%;float:left');
+        }
+
+        document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
         
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
             // do something
             document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
         }
-        //onclick=\"myPlayer.currentTime("+cue.startTime+")
+
         $("#"+subtitle_id+" span.cue").click(function() {
-            console.log("cue");
             myPlayer.currentTime($(this).attr('begin'));
         });
-        
-        $("#"+subtitle_id+" span.togglesub").click(function() {
-            if($("#"+subtitle_id+" span.cue").is(':visible')) {
-              $("#"+subtitle_id+" span.cue").hide();
-              $("#"+videoplayer_id).attr('style','width:100%;float:left');
-              $("#"+subtitle_id).attr('style','width:30px;display:block;height:20px;overflow:hidden;position:absolute');
-            } else {
-              $("#"+subtitle_id+" span.cue").show();
-              $("#"+videoplayer_id).attr('style','width:50%;float:left');
-              $("#"+subtitle_id).attr('style','width:49%;display:block');
-            }
-        });
+
     }
     
     var save_user_state = function() {
@@ -68,6 +59,7 @@ function DmCloudVideo(runtime, element) {
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+                
                 //Load tracks
                 var tracks = myPlayer.textTracks();
                 for (var i = 0; i < tracks.length; i++) {
@@ -97,9 +89,10 @@ function DmCloudVideo(runtime, element) {
                         $("#"+subtitle_id+"_cue_"+tabActiveCues[cue].id).addClass("current");
                         lastcueid = tabActiveCues[cue].id;
                     }
-                    if(lastcueid > 0 && $("#"+subtitle_id+"_cue_"+lastcueid).length) {
+                    if($("#"+subtitle_id+" span.cue").is(':visible') && lastcueid > 0 && $("#"+subtitle_id+"_cue_"+lastcueid).length) {
+                        newtop = $("#"+subtitle_id).scrollTop() - $("#"+subtitle_id).offset().top + $("#"+subtitle_id+"_cue_"+lastcueid).offset().top;
                         $("#"+subtitle_id).animate({
-                            scrollTop:  $("#"+subtitle_id).scrollTop() - $("#"+subtitle_id).offset().top + $("#"+subtitle_id+"_cue_"+lastcueid).offset().top 
+                            scrollTop:  newtop 
                         }, 500);
                     }
                 });
@@ -113,6 +106,19 @@ function DmCloudVideo(runtime, element) {
     $("#"+select_id).change(function() {
         //console.log($( this ).val());
         myPlayer.playbackRate($( this ).val());
+    });
+
+    /**
+    Show or hide subtitle panel on right
+    **/
+    $("."+subtitle_id).click(function() {
+        if($("#"+subtitle_id).is(':visible')) {
+            $("#"+subtitle_id).hide();
+            $("#"+videoplayer_id).attr('style','width:100%;float:left');
+        }else{
+            $("#"+subtitle_id).show();
+            $("#"+videoplayer_id).attr('style','width:50%;float:left');
+        }
     });
     
 }

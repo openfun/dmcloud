@@ -11,10 +11,15 @@
     padding:2px;
     background-color:#f2f2f2;
 }
-.subtitle span.togglesub {
-    float:right;
+.subtitle_toggle {
+    /*float:right;*/
+    display:none;
+    /*position: absolute;
+    right: 1px;*/
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAImrAACHtQABAbEAAIDDAABhBAABA7IAADglAAAb4KZXaoEAAACUSURBVHja5JVBDYRADEVfNwhACusAnIADJICCRQoOwAE4YRwMl5I0XMskQ/ZfOv/y07ymHYkxkkIfEkmAwfgJKIH2iWDLotG6ZIuiAEbjd0UxkqsEOLRLgK/WzZkbChPK7e1ReR9eIHcJ0CuCYBak9zJ+54LMBsW1IKsXRdLhWZ6ddvz7v+smQG38qigqd/Dr/rxzAN0gHjr/p3LbAAAAAElFTkSuQmCC);
-    width:25px;
+    /*width:25px;*/
+    background-position: right;
+    background-repeat: no-repeat;
     height:24px;
 }
 
@@ -27,6 +32,9 @@
 }
 .videoplayer{
     width:100%;
+}
+.vjs-fullscreen .vjs-text-track-display .vjs-tt-cue {
+    font-size: 140%;
 }
 /*
 .playermid {
