@@ -41,6 +41,9 @@
 .vjs-fullscreen .vjs-text-track-display .vjs-tt-cue {
     font-size: 140%;
 }
+.vjs-tt-cue {
+    color: #fff;
+}
 
 .playbackrate {
     width: 100%;
