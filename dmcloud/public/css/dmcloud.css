@@ -28,7 +28,7 @@
 }
 
 .subtitle span.current {
-    color:red;
+    /*color:red;*/
     font-weight:bold;
 }
 .subtitle span {
