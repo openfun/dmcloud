@@ -14,7 +14,7 @@ function DmCloudVideo(runtime, element) {
         if(!$("."+subtitle_id).is(':visible')) {
             $("."+subtitle_id).show();
             $("#"+subtitle_id).show();
-            $("#"+videoplayer_id).attr('style','width:50%;float:left');
+            $("#"+videoplayer_id).attr('style','width:55%;float:left');
         }
 
         document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
@@ -22,7 +22,8 @@ function DmCloudVideo(runtime, element) {
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
             // do something
-            document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
+            //document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
+            document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+cue.text + "</span><br/>");
         }
 
         $("#"+subtitle_id+" span.cue").click(function() {
@@ -41,7 +42,8 @@ function DmCloudVideo(runtime, element) {
         });
     }
     var trackload = new Array(); // array contening tacks id and cues
-    $(function ($) {
+
+    //$(function ($) {
         /* Here's where you'd do things on page load. */
         
         if(video_id) {
@@ -60,6 +62,7 @@ function DmCloudVideo(runtime, element) {
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+
                 myPlayer.on('firstplay', function(){ 
                     if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
                 });
@@ -101,7 +104,8 @@ function DmCloudVideo(runtime, element) {
                 });
             });
         }//end if video_id
-    });
+        else {alert('no video id found');}
+    //});
     
     /**
     Speed video rate
@@ -120,7 +124,7 @@ function DmCloudVideo(runtime, element) {
             $("#"+videoplayer_id).attr('style','width:100%;float:left');
         }else{
             $("#"+subtitle_id).show();
-            $("#"+videoplayer_id).attr('style','width:50%;float:left');
+            $("#"+videoplayer_id).attr('style','width:55%;float:left');
         }
     });
     

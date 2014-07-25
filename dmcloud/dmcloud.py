@@ -213,8 +213,8 @@ class DmCloud(XBlock):
     
     @XBlock.json_handler
     def save_user_state(self, submissions, suffix=''):
-        print u'Received submissions: {}'.format(submissions)
-        log.info(u'Received submissions: {}'.format(submissions))
+        #print u'Received submissions: {}'.format(submissions)
+        #log.info(u'Received submissions: {}'.format(submissions))
         self.saved_video_position = submissions['saved_video_position']
         response = {
                 'result': 'success',

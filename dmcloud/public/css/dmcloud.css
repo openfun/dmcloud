@@ -1,15 +1,19 @@
 /* CSS for DmCloud */
 .subtitle {
-    width:49%;
+    width:44%;
     /*float:right;*/
     position:relative;
     right:1px;
+    left: 1px;
     height:355px;
     overflow-y:auto;
     display:none;
-    border:1px solid grey;
+    /*border:1px solid grey;*/
+    border-radius: 3px 0 0 3px;
+    border: 1px solid #c4bfab;
+    margin-left: 2px;
     padding:2px;
-    background-color:#f2f2f2;
+    /*background-color:#f2f2f2;*/
 }
 .subtitle_toggle {
     /*float:right;*/
@@ -29,6 +33,7 @@
 }
 .subtitle span {
     cursor:  pointer;
+    font-size: 0.9em;
 }
 .videoplayer{
     width:100%;
