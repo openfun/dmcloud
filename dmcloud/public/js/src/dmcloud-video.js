@@ -2,14 +2,14 @@
 function DmCloudVideo(runtime, element) {
     //console.log($('.xblock-save-button', element));
     var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
-    
+
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
     var select_id = $(element).find('select').attr('id');
     var subtitle_id = $(element).find('.subtitle').attr('id');
     var videoplayer_id = $(element).find('.videoplayer').attr('id');
     var newtop =0;
-    
+
     var showCues = function(cues) {
         if(!$("."+subtitle_id).is(':visible')) {
             $("."+subtitle_id).show();
@@ -18,7 +18,7 @@ function DmCloudVideo(runtime, element) {
         }
 
         document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
-        
+
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
             // do something
@@ -31,7 +31,7 @@ function DmCloudVideo(runtime, element) {
         });
 
     }
-    
+
     var save_user_state = function() {
         var data = {
             'saved_video_position': parseInt(myPlayer.currentTime()),
@@ -41,16 +41,15 @@ function DmCloudVideo(runtime, element) {
             //console.log("ok");
         });
     }
-    var trackload = new Array(); // array contening tacks id and cues
+    var trackload = new Array(); // array contening tracks id and cues (queues ?)
 
-    //$(function ($) {
         /* Here's where you'd do things on page load. */
-        
+
         if(video_id) {
             videojs(video_id, {}, function(){
                 // Player (this) is initialized and ready.
                 myPlayer=this;
-                
+
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
                 /*
                 if($("#"+myPlayer.id()).children(':first').is("object")) {
@@ -63,7 +62,7 @@ function DmCloudVideo(runtime, element) {
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
 
-                myPlayer.on('firstplay', function(){ 
+                myPlayer.on('firstplay', function(){
                     if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
                 });
                 //Load tracks
@@ -98,15 +97,13 @@ function DmCloudVideo(runtime, element) {
                     if($("#"+subtitle_id+" span.cue").is(':visible') && lastcueid > 0 && $("#"+subtitle_id+"_cue_"+lastcueid).length) {
                         newtop = $("#"+subtitle_id).scrollTop() - $("#"+subtitle_id).offset().top + $("#"+subtitle_id+"_cue_"+lastcueid).offset().top;
                         $("#"+subtitle_id).animate({
-                            scrollTop:  newtop 
+                            scrollTop:  newtop
                         }, 500);
                     }
                 });
             });
         }//end if video_id
-        else {alert('no video id found');}
-    //});
-    
+
     /**
     Speed video rate
     **/
@@ -127,7 +124,7 @@ function DmCloudVideo(runtime, element) {
             $("#"+videoplayer_id).attr('style','width:55%;float:left');
         }
     });
-    
+
 }
 
 function showTime(totalSec) {
