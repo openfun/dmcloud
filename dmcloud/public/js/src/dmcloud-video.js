@@ -6,7 +6,7 @@ function DmCloudVideo(runtime, element) {
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
     var select_id = $(element).find('select').attr('id');
-    var subtitle_id = $(element).find('.subtitle').attr('id');
+    var subtitle_id = $(element).find('.dm-subtitle').attr('id');
     var videoplayer_id = $(element).find('.videoplayer').attr('id');
     var newtop =0;
 
@@ -16,14 +16,15 @@ function DmCloudVideo(runtime, element) {
             $("#"+subtitle_id).show();
             $("#"+videoplayer_id).attr('style','width:55%;float:left');
         }
-
+        //console.log("showCues "+subtitle_id);
         document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
 
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
+            //console.log("cue "+j+" - "+cue.text);
             // do something
             //document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
-            document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+cue.text + "</span><br/>");
+            document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\">&nbsp;-&nbsp;"+cue.text+"</span><br/>");
         }
 
         $("#"+subtitle_id+" span.cue").click(function() {
@@ -82,6 +83,7 @@ function DmCloudVideo(runtime, element) {
                     } else {
                         $("#"+videoplayer_id).attr('style','width:100%');
                         $("#"+subtitle_id).hide();
+                        $("."+subtitle_id).hide();
                     }
                     //track.on('activate', function(){ console.log("activate"); console.log($(this)); });
                 });

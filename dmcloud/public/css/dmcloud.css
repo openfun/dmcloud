@@ -27,11 +27,11 @@
     height:24px;
 }
 
-.subtitle span.current {
+.dm-subtitle span.current {
     /*color:red;*/
     font-weight:bold;
 }
-.subtitle span {
+.dm-subtitle span {
     cursor:  pointer;
     font-size: 0.9em;
 }
