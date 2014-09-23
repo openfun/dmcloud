@@ -18,28 +18,72 @@ function DmCloudVideo(runtime, element) {
     videojs.HDPlugin = videojs.Button.extend({
         /* @constructor */
         init: function(player, options){
+            this.player = player;
+            player.videoHD = options.videoHD;
             videojs.Button.call(this, player, options);
             this.on('click', this.onClick);
         }
     });
+
     videojs.HDPlugin.prototype.onClick = function() {
         console.log("debut click "+videoHD);
+        /*
         if(videoHD==true){
-            $("#"+video_id).find(".vjs-HD-button").removeClass("hdon");
-            $("#"+video_id).find(".vjs-HD-button").addClass("hdoff");
-            videojs(video_id).src([{type: "video/mp4", src: sdurl }]);
-            videojs(video_id).play();
+            $("#"+videoplayer_id).find(".vjs-HD-button").removeClass("hdon");
+            $("#"+videoplayer_id).find(".vjs-HD-button").addClass("hdoff");
+            myPlayer.src([{type: "video/mp4", src: sdurl }]);
+            myPlayer.play();
             videoHD = false;
         } else {
-            $("#"+video_id).find(".vjs-HD-button").removeClass("hdoff");
-            $("#"+video_id).find(".vjs-HD-button").addClass("hdon");
-            videojs(video_id).src([{type: "video/mp4", src: hdurl }]);
-            videojs(video_id).play();
+            $("#"+videoplayer_id).find(".vjs-HD-button").removeClass("hdoff");
+            $("#"+videoplayer_id).find(".vjs-HD-button").addClass("hdon");
+            myPlayer.src([{type: "video/mp4", src: hdurl }]);
+            myPlayer.play();
             videoHD = true;
         }
+        */
+        var player = this.player,
+            current_time = player.currentTime(),
+            is_paused = player.paused();
+
+        console.log("ID : "+player.id());
+
+        if(player.videoHD==true){
+
+            $("#"+player.id()).find(".vjs-HD-button").removeClass("hdon");
+            $("#"+player.id()).find(".vjs-HD-button").addClass("hdoff");
+
+            player.src( [{type: "video/mp4", src: sdurl }] ).one( 'loadedmetadata', function() {
+                player.currentTime( current_time );
+                if ( !is_paused ) { player.play(); }
+            });
+            player.videoHD = false;
+        } else {
+            $("#"+player.id()).find(".vjs-HD-button").removeClass("hdoff");
+            $("#"+player.id()).find(".vjs-HD-button").addClass("hdon");
+
+            player.src( [{type: "video/mp4", src: hdurl }] ).one( 'loadedmetadata', function() {
+                player.currentTime( current_time );
+                if ( !is_paused ) { player.play(); }
+            });
+            player.videoHD = true;
+        }
+        /*
+        player.src( [{type: "video/mp4", src: hdurl }] ).one( 'loadedmetadata', function() {
+            player.currentTime( current_time );
+            if ( !is_paused ) { player.play(); }
+        });
+        */
         console.log("fin click "+videoHD);
     };
+
     videojs.plugin('HDPlugin', function( options ) {
+        var player = this;
+        console.log("player "+player);
+        player.chgsrc = function(src) {
+            player.src([{type: "video/mp4", src: src }]);
+            player.play();
+        };
         var HDPlugin = new videojs.HDPlugin( this, {
             el : videojs.Component.prototype.createEl( null, {
                 className: 'vjs-HD-button vjs-control',
@@ -48,7 +92,8 @@ function DmCloudVideo(runtime, element) {
                    'aria-live': 'polite', 
                    tabIndex: 0
                 
-            })
+            }),
+            videoHD : false
         });
         // Add the button to the control bar object and the DOM
         this.controlBar.HDPlugin = this.controlBar.addChild( HDPlugin );
