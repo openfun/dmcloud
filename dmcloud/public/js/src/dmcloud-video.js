@@ -5,10 +5,58 @@ function DmCloudVideo(runtime, element) {
 
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
+    var hdurl = $(element).find('video').attr('HD');
+    var sdurl = $(element).find('video').attr('SD');
     var select_id = $(element).find('select').attr('id');
     var subtitle_id = $(element).find('.dm-subtitle').attr('id');
     var videoplayer_id = $(element).find('.videoplayer').attr('id');
     var newtop =0;
+    var videoHD=false;
+    /**
+    HD
+    **/
+    videojs.HDPlugin = videojs.Button.extend({
+        /* @constructor */
+        init: function(player, options){
+            videojs.Button.call(this, player, options);
+            this.on('click', this.onClick);
+        }
+    });
+    videojs.HDPlugin.prototype.onClick = function() {
+        console.log("debut click "+videoHD);
+        if(videoHD==true){
+            $("#"+video_id).find(".vjs-HD-button").removeClass("hdon");
+            $("#"+video_id).find(".vjs-HD-button").addClass("hdoff");
+            videojs(video_id).src([{type: "video/mp4", src: sdurl }]);
+            videojs(video_id).play();
+            videoHD = false;
+        } else {
+            $("#"+video_id).find(".vjs-HD-button").removeClass("hdoff");
+            $("#"+video_id).find(".vjs-HD-button").addClass("hdon");
+            videojs(video_id).src([{type: "video/mp4", src: hdurl }]);
+            videojs(video_id).play();
+            videoHD = true;
+        }
+        console.log("fin click "+videoHD);
+    };
+    videojs.plugin('HDPlugin', function( options ) {
+        var HDPlugin = new videojs.HDPlugin( this, {
+            el : videojs.Component.prototype.createEl( null, {
+                className: 'vjs-HD-button vjs-control',
+                   innerHTML: '<div class="vjs-control-content">' + ('HD') + '</div>',
+                   role: 'button',
+                   'aria-live': 'polite', 
+                   tabIndex: 0
+                
+            })
+        });
+        // Add the button to the control bar object and the DOM
+        this.controlBar.HDPlugin = this.controlBar.addChild( HDPlugin );
+    });
+    /**
+    fin HD
+    **/
+
 
     var showCues = function(cues) {
         if(!$("."+subtitle_id).is(':visible')) {
@@ -50,7 +98,6 @@ function DmCloudVideo(runtime, element) {
             videojs(video_id, {}, function(){
                 // Player (this) is initialized and ready.
                 myPlayer=this;
-
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
                 /*
                 if($("#"+myPlayer.id()).children(':first').is("object")) {
@@ -103,6 +150,8 @@ function DmCloudVideo(runtime, element) {
                         }, 500);
                     }
                 });
+                if(hdurl) myPlayer.HDPlugin({});
+
             });
         }//end if video_id
 
@@ -136,3 +185,5 @@ function showTime(totalSec) {
     var result = (hours < 10 ? "0" + hours : hours) + ":" + (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
     return result;
 }
+
+

@@ -139,6 +139,7 @@ class DmCloud(XBlock):
         frag = Fragment()
         embed_url = ""
         stream_url = ""
+        stream_url_hd = ""
         download_url = ""
         thumbnail_url = ""
         subs_url = {}
@@ -153,6 +154,8 @@ class DmCloud(XBlock):
                 #    print "VAL : %s" %assets[k]
                 #print 20*"-"
                 thumbnail_url = assets['jpeg_thumbnail_source']['stream_url']
+                if assets['mp4_h264_aac_hq']:
+                    stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hq', expires = time.time() + 3600 * 24 * 7)
                 #print 20*"-"
                 subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
                 if self.allow_download_video :
@@ -166,6 +169,7 @@ class DmCloud(XBlock):
             'url': embed_url,
             'download_url': download_url,
             'stream_url' : stream_url,
+            'stream_url_hd' : stream_url_hd,
             'subs_url' : subs_url,
             'thumbnail_url' :thumbnail_url,
             "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?')

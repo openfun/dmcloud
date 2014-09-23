@@ -56,6 +56,26 @@
 }
 .playbackrate label { color: white; font-size: 1em; }
 
+.vjs-default-skin .vjs-control.vjs-HD-button {
+    display: block;
+    font-size: 1.5em;
+    line-height: 2;
+    position: relative;
+    top: 0;
+    float:right;
+    left: 10px;
+    height: 100%;
+    text-align: center;
+    cursor: pointer;
+}
+
+.hdon {
+    color: #36D8DE; font-weight:bold; text-shadow: 0 0 1em #fff;
+}
+.hdoff {
+    color: silver; font-weight:normal; text-shadow: 0 0 5em #fff;
+}
+
 /*
 .playermid {
     width:50%;
