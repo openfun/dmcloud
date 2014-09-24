@@ -1,6 +1,6 @@
 /* CSS for DmCloud */
 .dm-subtitle {
-    width:44%;
+    width:38%; /*44%;*/
     /*float:right;*/
     position:relative;
     right:1px;
@@ -75,7 +75,11 @@
 .hdoff {
     color: silver; font-weight:normal; text-shadow: 0 0 5em #fff;
 }
-
+/*
+.vjs-default-skin .vjs-control {
+    width: 3.4em;
+}
+*/
 /*
 .playermid {
     width:50%;

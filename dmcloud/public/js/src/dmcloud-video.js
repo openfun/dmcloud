@@ -107,7 +107,8 @@ function DmCloudVideo(runtime, element) {
         if(!$("."+subtitle_id).is(':visible')) {
             $("."+subtitle_id).show();
             $("#"+subtitle_id).show();
-            $("#"+videoplayer_id).attr('style','width:55%;float:left');
+            //$("#"+videoplayer_id).attr('style','width:55%;float:left');
+            $("#"+videoplayer_id).attr('style','width:61%;float:left');
         }
         //console.log("showCues "+subtitle_id);
         document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
@@ -217,7 +218,8 @@ function DmCloudVideo(runtime, element) {
             $("#"+videoplayer_id).attr('style','width:100%;float:left');
         }else{
             $("#"+subtitle_id).show();
-            $("#"+videoplayer_id).attr('style','width:55%;float:left');
+            //$("#"+videoplayer_id).attr('style','width:55%;float:left');
+            $("#"+videoplayer_id).attr('style','width:61%;float:left');
         }
     });
 
