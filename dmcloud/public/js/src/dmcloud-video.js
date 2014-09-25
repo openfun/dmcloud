@@ -2,7 +2,7 @@
 function DmCloudVideo(runtime, element) {
     //console.log($('.xblock-save-button', element));
     var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
-
+    
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
     var hdurl = $(element).find('video').attr('HD');
@@ -26,27 +26,10 @@ function DmCloudVideo(runtime, element) {
     });
 
     videojs.HDPlugin.prototype.onClick = function() {
-        console.log("debut click "+videoHD);
-        /*
-        if(videoHD==true){
-            $("#"+videoplayer_id).find(".vjs-HD-button").removeClass("hdon");
-            $("#"+videoplayer_id).find(".vjs-HD-button").addClass("hdoff");
-            myPlayer.src([{type: "video/mp4", src: sdurl }]);
-            myPlayer.play();
-            videoHD = false;
-        } else {
-            $("#"+videoplayer_id).find(".vjs-HD-button").removeClass("hdoff");
-            $("#"+videoplayer_id).find(".vjs-HD-button").addClass("hdon");
-            myPlayer.src([{type: "video/mp4", src: hdurl }]);
-            myPlayer.play();
-            videoHD = true;
-        }
-        */
+        
         var player = this.player,
             current_time = player.currentTime(),
             is_paused = player.paused();
-
-        console.log("ID : "+player.id());
 
         if(player.videoHD==true){
 
@@ -68,13 +51,6 @@ function DmCloudVideo(runtime, element) {
             });
             player.videoHD = true;
         }
-        /*
-        player.src( [{type: "video/mp4", src: hdurl }] ).one( 'loadedmetadata', function() {
-            player.currentTime( current_time );
-            if ( !is_paused ) { player.play(); }
-        });
-        */
-        console.log("fin click "+videoHD);
     };
 
     videojs.plugin('HDPlugin', function( options ) {
@@ -136,26 +112,27 @@ function DmCloudVideo(runtime, element) {
             //console.log("ok");
         });
     }
+    
     var trackload = new Array(); // array contening tracks id and cues (queues ?)
 
-        /* Here's where you'd do things on page load. */
-
+    /* Here's where you'd do things on page load. */
+    $(function ($) {
+        // add 25/09/2014 to force reload player
+        if(!myPlayer) {
+            delete videojs.players[video_id];
+        }
         if(video_id) {
+            
             videojs(video_id, {}, function(){
+                console.log('videojs ready');
                 // Player (this) is initialized and ready.
                 myPlayer=this;
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
-                /*
-                if($("#"+myPlayer.id()).children(':first').is("object")) {
-                    $("#"+select_id).hide();
-                    $('label[for="'+select_id+'"]').hide();
-                }
-                */
                 //save_user_state
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
-
+    
                 myPlayer.on('firstplay', function(){
                     if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
                 });
@@ -197,15 +174,14 @@ function DmCloudVideo(runtime, element) {
                     }
                 });
                 if(hdurl) myPlayer.HDPlugin({});
-
             });
         }//end if video_id
-
+    });// end function
     /**
     Speed video rate
     **/
     $("#"+select_id).change(function() {
-        //console.log($( this ).val());
+        console.log($( this ).val());
         myPlayer.playbackRate($( this ).val());
     });
 
@@ -222,7 +198,6 @@ function DmCloudVideo(runtime, element) {
             $("#"+videoplayer_id).attr('style','width:61%;float:left');
         }
     });
-
 }
 
 function showTime(totalSec) {
