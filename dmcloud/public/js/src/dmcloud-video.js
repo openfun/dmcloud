@@ -55,7 +55,6 @@ function DmCloudVideo(runtime, element) {
 
     videojs.plugin('HDPlugin', function( options ) {
         var player = this;
-        console.log("player "+player);
         player.chgsrc = function(src) {
             player.src([{type: "video/mp4", src: src }]);
             player.play();
@@ -103,14 +102,20 @@ function DmCloudVideo(runtime, element) {
 
     }
 
+    var is_saving_user_state = false;
     var save_user_state = function() {
         var data = {
             'saved_video_position': parseInt(myPlayer.currentTime()),
         };
-        $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
-            //window.location.reload(false);
-            //console.log("ok");
-        });
+        if(is_saving_user_state==false) {
+            is_saving_user_state=true;
+            $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
+               //window.location.reload(false);
+               //is_saving_user_state=false;
+               setTimeout(is_saving_user_state=false, 1000);
+           });
+        }
+        
     }
     
     var trackload = new Array(); // array contening tracks id and cues (queues ?)
@@ -122,9 +127,7 @@ function DmCloudVideo(runtime, element) {
             delete videojs.players[video_id];
         }
         if(video_id) {
-            
             videojs(video_id, {}, function(){
-                console.log('videojs ready');
                 // Player (this) is initialized and ready.
                 myPlayer=this;
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
