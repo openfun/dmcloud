@@ -107,12 +107,14 @@ function DmCloudVideo(runtime, element) {
         var data = {
             'saved_video_position': parseInt(myPlayer.currentTime()),
         };
-        if(is_saving_user_state==false) {
+        if(is_saving_user_state===false) {
             is_saving_user_state=true;
             $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
                //window.location.reload(false);
                //is_saving_user_state=false;
-               setTimeout(is_saving_user_state=false, 1000);
+               setTimeout(function (){
+                is_saving_user_state=false;
+               }, 1000);
            });
         }
         
