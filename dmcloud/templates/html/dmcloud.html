@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="dmcloud_block">
-    
+    <h2>{{self.display_name}}</h2>
     {% if self.id_video %}
         {% if self.cloudkey and stream_url != "" %}
             <div class="subtitle_toggle subtitle_{{id}}">&nbsp;</div>
