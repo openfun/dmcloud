@@ -140,34 +140,39 @@ class DmCloud(XBlock):
         embed_url = ""
         stream_url = ""
         stream_url_hd = ""
-        download_url = ""
+        download_url_ld = ""
+        download_url_std = ""
+        download_url_hd = ""
         thumbnail_url = ""
         subs_url = {}
         if self.id_video != "":
             try:
-                embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                #assets['jpeg_thumbnail_source']['stream_url']
+                #mp4_h264_aac
+                #mp4_h264_aac_ld
+                #mp4_h264_aac_hq -> 480
+                #mp4_h264_aac_hd -> 720
+                #jpeg_thumbnail_medium
+                thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
                 stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
-                assets = self.cloudkey.media.get_assets(id=self.id_video)
-                #print 20*"-"
-                #for k in assets:
-                #    print "KEY : %s" %k
-                #    print "VAL : %s" %assets[k]
-                #print 20*"-"
-                thumbnail_url = assets['jpeg_thumbnail_source']['stream_url']
-                if assets['mp4_h264_aac_hq']:
-                    stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hq', expires = time.time() + 3600 * 24 * 7)
-                #print 20*"-"
+                stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', expires = time.time() + 3600 * 24 * 7)
+                #assets = self.cloudkey.media.get_assets(id=self.id_video)
                 subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
                 if self.allow_download_video :
-                    download_url = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
+                    download_url_ld = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires = time.time() + 3600 * 24 * 7)
+                    download_url_std = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
+                    download_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires = time.time() + 3600 * 24 * 7)
             except:
                 pass
         
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
-            'url': embed_url,
-            'download_url': download_url,
+            #'url': embed_url,
+            'download_url_ld': download_url_ld,
+            'download_url_std': download_url_std,
+            'download_url_hd': download_url_hd,
             'stream_url' : stream_url,
             'stream_url_hd' : stream_url_hd,
             'subs_url' : subs_url,

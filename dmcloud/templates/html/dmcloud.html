@@ -27,10 +27,17 @@
                 </span>
     
             {% if self.allow_download_video %}
-                {% if download_url != "" %}
+                {% if download_url_ld != "" %}
+                    
                     <ul class="wrapper-downloads">
                         <li class="video-sources video-download-button">
-                            <a href="{{download_url}}" target="_blank" download>{% trans "Download video" %}</a>
+                            {% trans "Download video" %} <a href="{{download_url_ld}}" target="_blank" download>Smartphone</a>
+                            {% if download_url_std != "" %}
+                                 - <a href="{{download_url_std}}" target="_blank" download>Standard</a>
+                            {%endif%}
+                            {% if download_url_hd != "" %}
+                                 - <a href="{{download_url_hd}}" target="_blank" download>HD</a>
+                            {%endif%}
                         </li>
                     </ul>
                 {%endif%}
