@@ -156,8 +156,10 @@ class DmCloud(XBlock):
                 #jpeg_thumbnail_medium
                 thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
                 stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
-                stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', expires = time.time() + 3600 * 24 * 7)
-                if stream_url_hd is None or stream_url_hd == "":
+                assets = self.cloudkey.media.get_assets(id=self.id_video)
+                if assets.get('mp4_h264_aac_hd') :
+                    stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', expires = time.time() + 3600 * 24 * 7)
+                elif assets.get('mp4_h264_aac_hq') :
                     stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hq', expires = time.time() + 3600 * 24 * 7)
                 #assets = self.cloudkey.media.get_assets(id=self.id_video)
                 subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
