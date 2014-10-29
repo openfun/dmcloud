@@ -5,8 +5,8 @@ function DmCloudVideo(runtime, element) {
     
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
-    //var hdurl = $(element).find('video').attr('HD');
-    //var sdurl = $(element).find('video').attr('SD');
+    var hdurl = $(element).find('video').attr('HD');
+    var sdurl = $(element).find('video').attr('SD');
     var select_id = $(element).find('select').attr('id');
     var subtitle_id = $(element).find('.dm-subtitle').attr('id');
     var videoplayer_id = $(element).find('.videoplayer').attr('id');
@@ -31,21 +31,12 @@ function DmCloudVideo(runtime, element) {
             current_time = player.currentTime(),
             is_paused = player.paused();
 
-        console.log("***************************");
-        console.log(player.id());
-        console.log($(element).find('video').attr('HD'));
-        console.log($("#"+player.id()).find("video").attr('HD'));
-        //*************************** (index):2463
-        //video_i4x-essec-46001-dmcloud-818fdb108a1041a58b6268b25a5b9347 (index):2464
-        //http://cdn.dmcloud.net/route/5404810194a6f60f2fd7348d/5447758094a6f65197c65…264_aac_hq.mp4?auth=1415196993-0-jtmil32q-bcc4ab98509715dfd4a46939a5e49444
-        //$("#"+player.id()).find("video").attr('HD');
-
         if(player.videoHD==true){
 
             $("#"+player.id()).find(".vjs-HD-button").removeClass("hdon");
             $("#"+player.id()).find(".vjs-HD-button").addClass("hdoff");
 
-            player.src( [{type: "video/mp4", src: $("#"+player.id()).find("video").attr('SD') }] ).one( 'loadedmetadata', function() {
+            player.src( [{type: "video/mp4", src: player.sdurl }] ).one( 'loadedmetadata', function() {
                 player.currentTime( current_time );
                 if ( !is_paused ) { player.play(); }
             });
@@ -54,7 +45,7 @@ function DmCloudVideo(runtime, element) {
             $("#"+player.id()).find(".vjs-HD-button").removeClass("hdoff");
             $("#"+player.id()).find(".vjs-HD-button").addClass("hdon");
 
-            player.src( [{type: "video/mp4", src: $("#"+player.id()).find("video").attr('HD') }] ).one( 'loadedmetadata', function() {
+            player.src( [{type: "video/mp4", src: player.hdurl }] ).one( 'loadedmetadata', function() {
                 player.currentTime( current_time );
                 if ( !is_paused ) { player.play(); }
             });
@@ -146,6 +137,9 @@ function DmCloudVideo(runtime, element) {
                 myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
                 myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+
+                myPlayer.sdurl = sdurl;
+                myPlayer.hdurl = hdurl;
     
                 myPlayer.on('firstplay', function(){
                     if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
@@ -187,7 +181,8 @@ function DmCloudVideo(runtime, element) {
                         }, 500);
                     }
                 });
-                if($("#"+myPlayer.id()).find('video').attr('HD')) myPlayer.HDPlugin({});
+                if(hdurl) myPlayer.HDPlugin({}); //ATTENTION NE FONCTIONNE PAS SOUS FF !
+
             });
         }//end if video_id
     });// end function
@@ -195,7 +190,7 @@ function DmCloudVideo(runtime, element) {
     Speed video rate
     **/
     $("#"+select_id).change(function() {
-        console.log($( this ).val());
+        //console.log($( this ).val());
         myPlayer.playbackRate($( this ).val());
     });
 
