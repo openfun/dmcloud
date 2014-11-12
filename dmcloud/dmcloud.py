@@ -181,6 +181,10 @@ class DmCloud(XBlock):
             except:
                 pass
         
+
+        videojsurl = self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js")
+        print "******************* %s" %videojsurl
+
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
@@ -192,7 +196,8 @@ class DmCloud(XBlock):
             'stream_url_hd' : stream_url_hd,
             'subs_url' : subs_url,
             'thumbnail_url' :thumbnail_url,
-            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?')
+            "transcript_url" : self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
+            "videojsurl" : videojsurl
         }))
         
         
@@ -202,7 +207,7 @@ class DmCloud(XBlock):
         #load locally to work with more than one instance on page
         
         #change #892 -- modify to debug
-        frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
+        #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
         #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
         frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
         
