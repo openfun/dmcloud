@@ -3,51 +3,57 @@
 <div class="dmcloud_block">
     <h2>{{self.display_name}}</h2>
     {% if self.id_video %}
-        {% if self.cloudkey and stream_url != "" %}
-            <div class="subtitle_toggle subtitle_{{id}}">&nbsp;</div>
+        {% if embed_url != "" %}
             <div class="videoplayer"  id="videoplayer_{{id}}">
-                    <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}"
-                    {% if stream_url_hd != "" %}
-                    HD="{{stream_url_hd}}" SD="{{stream_url}}"
-                    {% endif %}
-
-                    >
-                    <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
-                    {% for lang, url in subs_url.items %}
-                    <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
-                    {%endfor%}
-                </video>
-                <span class="playbackrate select_{{id}}">
-                    <label for="select_{{id}}">{{self.fields.playback_rate.display_name}} &nbsp;:&nbsp;
-                    <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
-                    {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
-                        <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
-                    {%endfor%}
-                    </select>
-                    </label>
-                </span>
-    
-            {% if self.allow_download_video %}
-                {% if download_url_ld != "" %}
-                    
-                    <ul class="wrapper-downloads">
-                        <li class="video-sources video-download-button">
-                            {% trans "Download video" %} <a href="{{download_url_ld}}" target="_blank" download>Smartphone</a>
-                            {% if download_url_std != "" %}
-                                 - <a href="{{download_url_std}}" target="_blank" download>Standard</a>
-                            {%endif%}
-                            {% if download_url_hd != "" %}
-                                 - <a href="{{download_url_hd}}" target="_blank" download>HD</a>
-                            {%endif%}
-                        </li>
-                    </ul>
-                {%endif%}
-            {%endif%}
+                <iframe width="100%" height="480" frameborder="0" scrolling="no" src="{{embed_url}}"></iframe>
             </div>
-            <div class="dm-subtitle" id="subtitle_{{id}}">&nbsp;</div>
-    {%else%}
-        {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
-        {%endif%}
+        {% else %}
+            {% if self.cloudkey and stream_url != "" %}
+                <div class="subtitle_toggle subtitle_{{id}}">&nbsp;</div>
+                <div class="videoplayer"  id="videoplayer_{{id}}">
+                        <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}"
+                        {% if stream_url_hd != "" %}
+                        HD="{{stream_url_hd}}" SD="{{stream_url}}"
+                        {% endif %}
+
+                        >
+                        <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
+                        {% for lang, url in subs_url.items %}
+                        <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
+                        {%endfor%}
+                    </video>
+                    <span class="playbackrate select_{{id}}">
+                        <label for="select_{{id}}">{{self.fields.playback_rate.display_name}} &nbsp;:&nbsp;
+                        <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
+                        {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
+                            <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
+                        {%endfor%}
+                        </select>
+                        </label>
+                    </span>
+        
+                {% if self.allow_download_video %}
+                    {% if download_url_ld != "" %}
+                        
+                        <ul class="wrapper-downloads">
+                            <li class="video-sources video-download-button">
+                                {% trans "Download video" %} <a href="{{download_url_ld}}" target="_blank" download>Smartphone</a>
+                                {% if download_url_std != "" %}
+                                     - <a href="{{download_url_std}}" target="_blank" download>Standard</a>
+                                {%endif%}
+                                {% if download_url_hd != "" %}
+                                     - <a href="{{download_url_hd}}" target="_blank" download>HD</a>
+                                {%endif%}
+                            </li>
+                        </ul>
+                    {%endif%}
+                {%endif%}
+                </div>
+                <div class="dm-subtitle" id="subtitle_{{id}}">&nbsp;</div>
+            {%else%}
+                {% trans "No CloudKey found or no url given. Are you sure you have given a good id ?" %}
+            {%endif%}
+        {% endif %}
     {%else%}
     {% trans "No ID found" %}
     {%endif%}

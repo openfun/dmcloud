@@ -8,7 +8,8 @@ function DmCloud(runtime, element) {
             var data = {
                 'display_name': $('#edit_display_name').val(),
                 'id_video': $('#video_id').val(),
-                'allow_download_video': $('#allow_download_video').val()
+                'allow_download_video': $('#allow_download_video').val(),
+                'dmcloud_player': $('#dmcloud_player_video').val()
             };
             $.post(handlerUrl, JSON.stringify(data)).complete(function() {
                 window.location.reload(false);

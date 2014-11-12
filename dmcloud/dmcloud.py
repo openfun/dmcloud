@@ -158,37 +158,41 @@ class DmCloud(XBlock):
         subs_url = {}
         if self.id_video != "":
             try:
-                #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
-                #assets['jpeg_thumbnail_source']['stream_url']
-                #mp4_h264_aac
-                #mp4_h264_aac_ld
-                #mp4_h264_aac_hq -> 480
-                #mp4_h264_aac_hd -> 720
-                #jpeg_thumbnail_medium
-                thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
-                stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
-                assets = self.cloudkey.media.get_assets(id=self.id_video)
-                if assets.get('mp4_h264_aac_hd') :
-                    stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', expires = time.time() + 3600 * 24 * 7)
-                elif assets.get('mp4_h264_aac_hq') :
-                    stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hq', expires = time.time() + 3600 * 24 * 7)
-                #assets = self.cloudkey.media.get_assets(id=self.id_video)
-                subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
-                if self.allow_download_video :
-                    download_url_ld = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires = time.time() + 3600 * 24 * 7)
-                    download_url_std = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
-                    download_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires = time.time() + 3600 * 24 * 7)
+                if self.player == "Dailymotion":
+                    embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                else:
+                    #assets['jpeg_thumbnail_source']['stream_url']
+                    #mp4_h264_aac
+                    #mp4_h264_aac_ld
+                    #mp4_h264_aac_hq -> 480
+                    #mp4_h264_aac_hd -> 720
+                    #jpeg_thumbnail_medium
+                    thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
+                    stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires = time.time() + 3600 * 24 * 7)
+                    assets = self.cloudkey.media.get_assets(id=self.id_video)
+                    if assets.get('mp4_h264_aac_hd') :
+                        stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', expires = time.time() + 3600 * 24 * 7)
+                    elif assets.get('mp4_h264_aac_hq') :
+                        stream_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hq', expires = time.time() + 3600 * 24 * 7)
+                    #assets = self.cloudkey.media.get_assets(id=self.id_video)
+                    subs_url = self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
+                    if self.allow_download_video :
+                        download_url_ld = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires = time.time() + 3600 * 24 * 7)
+                        download_url_std = self.cloudkey.media.get_stream_url(id=self.id_video, download=True, expires = time.time() + 3600 * 24 * 7)
+                        download_url_hd = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires = time.time() + 3600 * 24 * 7)
             except:
-                pass
+                import sys
+                msg = u'\n***** DmCloud error :%s - %s' %(sys.exc_info()[0], sys.exc_info()[1])
+                log.error(msg)
+                print msg
         
-
+        #change #892 
         videojsurl = self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js")
-        print "******************* %s" %videojsurl
 
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
-            #'url': embed_url,
+            'embed_url': embed_url,
             'download_url_ld': download_url_ld,
             'download_url_std': download_url_std,
             'download_url_hd': download_url_hd,
@@ -206,7 +210,6 @@ class DmCloud(XBlock):
         #frag.add_css_url("http://vjs.zencdn.net/4.6/video-js.css")
         #load locally to work with more than one instance on page
         
-        #change #892 -- modify to debug
         #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
         #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
         frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
@@ -240,6 +243,7 @@ class DmCloud(XBlock):
             self.display_name = submissions['display_name']
             self.id_video = submissions['id_video'].strip()
             self.allow_download_video = submissions['allow_download_video']
+            self.player = submissions['dmcloud_player']
             response = {
                 'result': 'success',
             }
