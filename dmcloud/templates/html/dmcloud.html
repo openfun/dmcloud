@@ -5,7 +5,7 @@
     {% if self.id_video %}
         {% if embed_url != "" %}
             <div class="videoplayer"  id="videoplayer_{{id}}">
-                <iframe width="100%" height="480" frameborder="0" scrolling="no" src="{{embed_url}}"></iframe>
+                <iframe width="100%" height="360" frameborder="0" scrolling="no" src="{{embed_url}}"></iframe>
             </div>
         {% else %}
             {% if self.cloudkey and stream_url != "" %}
