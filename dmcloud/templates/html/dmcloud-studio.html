@@ -28,6 +28,16 @@
             </div>
             <span class="tip setting-help">{{self.fields.allow_download_video.help}}</span>
        </li>
+       <li class="field comp-setting-entry metadata_entry is-set">
+           <div class="wrapper-comp-setting">
+                <label for="dmcloud_player_video" class="label setting-label">{{self.fields.player.display_name}}</label>
+                <select name="Player Video" id="dmcloud_player_video" class="input setting-input">
+                   <option value="HTML5" {% if self.player == "HTML5" %}selected{%endif%}>{% trans "HTML5" %}</option>
+                   <option value="Dailymotion" {% if self.player == "Dailymotion" %}selected{%endif%}>{% trans "Dailymotion" %}</option>
+                </select>
+            </div>
+            <span class="tip setting-help">{{self.fields.player.help}}</span>
+       </li>
   </ul>
   <div class="xblock-actions">
     <span class="xblock-editor-error-message"></span>
