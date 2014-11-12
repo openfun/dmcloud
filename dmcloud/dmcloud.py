@@ -115,6 +115,17 @@ class DmCloud(XBlock):
         default="1.0"
         )
 
+    player = String(
+        display_name=_("Player"),
+        help=_("Player use to display the video"),
+        scope=Scope.settings,
+        values=[
+            {'name': "HTML5", 'val': "HTML5"},
+            {'name': "Dailymotion", 'val': "Dailymotion"},
+        ],
+        default="HTML5"
+        )
+
     def resource_string(self, path):
         """Gets the content of a resource"""
         data = pkg_resources.resource_string(__name__, path)
