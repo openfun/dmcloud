@@ -194,7 +194,7 @@ class DmCloud(XBlock):
                 print msg
 
         #create url for videojs to add it directly in the template
-        videojsurl = self.runtime.local_resource_url(self, "public/video-js-4.6-full/video.js")
+        videojsurl = self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js")
 
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
@@ -212,7 +212,7 @@ class DmCloud(XBlock):
         }))
 
         #frag.add_css_url("public/videojs-4.6/video-js.css")
-        frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.6-full/video-js.min.css"))
+        frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
         #load locally to work with more than one instance on page
         #frag.add_css(self.resource_string("public/css/dmcloud.css"))
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))

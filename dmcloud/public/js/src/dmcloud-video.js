@@ -143,10 +143,7 @@ function DmCloudVideo(runtime, element) {
 
                 myPlayer.sdurl = sdurl;
                 myPlayer.hdurl = hdurl;
-    
-                myPlayer.on('firstplay', function(){
-                    if(!$("#"+myPlayer.id()).children(':first').is("object")) $('span.'+select_id).show();
-                });
+
                 //Load tracks
                 var tracks = myPlayer.textTracks();
                 for (var i = 0; i < tracks.length; i++) {
@@ -184,18 +181,11 @@ function DmCloudVideo(runtime, element) {
                         }, 500);
                     }
                 });
-                if(hdurl) myPlayer.HDPlugin({}); //ATTENTION NE FONCTIONNE PAS SOUS FF !
+                if(hdurl) myPlayer.HDPlugin({});
 
             });
         }//end if video_id
     //});// end function
-    /**
-    Speed video rate
-    **/
-    $("#"+select_id).change(function() {
-        //console.log($( this ).val());
-        myPlayer.playbackRate($( this ).val());
-    });
 
     /**
     Show or hide subtitle panel on right

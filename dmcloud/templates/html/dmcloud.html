@@ -16,6 +16,7 @@
                         {% if stream_url_hd != "" %}
                         HD="{{stream_url_hd}}" SD="{{stream_url}}"
                         {% endif %}
+                        data-setup='{ "playbackRates": [0.5, 1, 1.5, 2] }'
                         >
                         
                         <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
@@ -24,16 +25,7 @@
                         <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
                         {%endfor%}
                     </video>
-                    <span class="playbackrate select_{{id}}">
-                        <label for="select_{{id}}">{{self.fields.playback_rate.display_name}} &nbsp;:&nbsp;
-                        <select id='select_{{id}}' <!-- class="custom-dropdown__select custom-dropdown__select--white" -->>
-                        {% for speed in self.fields.playback_rate.values|dictsortreversed:"val" %}
-                            <option value="{{speed.val}}" {% if speed.val == self.playback_rate %}selected{% endif %}>{{speed.name}}</option>
-                        {%endfor%}
-                        </select>
-                        </label>
-                    </span>
-        
+
                 {% if self.allow_download_video %}
                     {% if download_url_ld != "" %}
                         <ul class="wrapper-downloads">
