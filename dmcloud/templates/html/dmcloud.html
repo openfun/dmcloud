@@ -1,5 +1,5 @@
 {% load i18n %}
-<script src="{{videojsurl}}"/>
+
 <div class="dmcloud_block">
     <h2>{{self.display_name}}</h2>
     {% if self.id_video %}
@@ -9,13 +9,13 @@
             </div>
         {% else %}
             {% if self.cloudkey and stream_url != "" %}
+                <script src="{{videojsurl}}" type="text/javascript" ></script>
                 <div class="subtitle_toggle subtitle_{{id}}">&nbsp;</div>
                 <div class="videoplayer"  id="videoplayer_{{id}}">
                         <video id='video_{{id}}' width="100%" height="360" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"  poster="{{thumbnail_url}}"
                         {% if stream_url_hd != "" %}
                         HD="{{stream_url_hd}}" SD="{{stream_url}}"
                         {% endif %}
-
                         >
                         <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
                         {% for lang, url in subs_url.items %}
