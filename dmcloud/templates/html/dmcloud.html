@@ -17,7 +17,9 @@
                         HD="{{stream_url_hd}}" SD="{{stream_url}}"
                         {% endif %}
                         >
+                        
                         <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
+                        
                         {% for lang, url in subs_url.items %}
                         <track src="{{transcript_url}}?url={{url|urlencode}}" kind="subtitles" srclang="{{lang}}" label="{{lang}}" {% if forloop.first %}default{% endif %}>
                         {%endfor%}
@@ -34,7 +36,6 @@
         
                 {% if self.allow_download_video %}
                     {% if download_url_ld != "" %}
-                        
                         <ul class="wrapper-downloads">
                             <li class="video-sources video-download-button">
                                 {% trans "Download video" %} <a href="{{download_url_ld}}" target="_blank" download>Smartphone</a>

@@ -15,64 +15,66 @@ function DmCloudVideo(runtime, element) {
     /**
     HD
     **/
-    videojs.HDPlugin = videojs.Button.extend({
-        /* @constructor */
-        init: function(player, options){
-            this.player = player;
-            player.videoHD = options.videoHD;
-            videojs.Button.call(this, player, options);
-            this.on('click', this.onClick);
-        }
-    });
-
-    videojs.HDPlugin.prototype.onClick = function() {
-        
-        var player = this.player,
-            current_time = player.currentTime(),
-            is_paused = player.paused();
-
-        if(player.videoHD==true){
-
-            $("#"+player.id()).find(".vjs-HD-button").removeClass("hdon");
-            $("#"+player.id()).find(".vjs-HD-button").addClass("hdoff");
-
-            player.src( [{type: "video/mp4", src: player.sdurl }] ).one( 'loadedmetadata', function() {
-                player.currentTime( current_time );
-                if ( !is_paused ) { player.play(); }
-            });
-            player.videoHD = false;
-        } else {
-            $("#"+player.id()).find(".vjs-HD-button").removeClass("hdoff");
-            $("#"+player.id()).find(".vjs-HD-button").addClass("hdon");
-
-            player.src( [{type: "video/mp4", src: player.hdurl }] ).one( 'loadedmetadata', function() {
-                player.currentTime( current_time );
-                if ( !is_paused ) { player.play(); }
-            });
-            player.videoHD = true;
-        }
-    };
-
-    videojs.plugin('HDPlugin', function( options ) {
-        var player = this;
-        player.chgsrc = function(src) {
-            player.src([{type: "video/mp4", src: src }]);
-            player.play();
-        };
-        var HDPlugin = new videojs.HDPlugin( this, {
-            el : videojs.Component.prototype.createEl( null, {
-                className: 'vjs-HD-button vjs-control',
-                   innerHTML: '<div class="vjs-control-content">' + ('HD') + '</div>',
-                   role: 'button',
-                   'aria-live': 'polite', 
-                   tabIndex: 0
-                
-            }),
-            videoHD : false
+    if(video_id) {
+        videojs.HDPlugin = videojs.Button.extend({
+            /* @constructor */
+            init: function(player, options){
+                this.player = player;
+                player.videoHD = options.videoHD;
+                videojs.Button.call(this, player, options);
+                this.on('click', this.onClick);
+            }
         });
-        // Add the button to the control bar object and the DOM
-        this.controlBar.HDPlugin = this.controlBar.addChild( HDPlugin );
-    });
+
+        videojs.HDPlugin.prototype.onClick = function() {
+            
+            var player = this.player,
+                current_time = player.currentTime(),
+                is_paused = player.paused();
+
+            if(player.videoHD==true){
+
+                $("#"+player.id()).find(".vjs-HD-button").removeClass("hdon");
+                $("#"+player.id()).find(".vjs-HD-button").addClass("hdoff");
+
+                player.src( [{type: "video/mp4", src: player.sdurl }] ).one( 'loadedmetadata', function() {
+                    player.currentTime( current_time );
+                    if ( !is_paused ) { player.play(); }
+                });
+                player.videoHD = false;
+            } else {
+                $("#"+player.id()).find(".vjs-HD-button").removeClass("hdoff");
+                $("#"+player.id()).find(".vjs-HD-button").addClass("hdon");
+
+                player.src( [{type: "video/mp4", src: player.hdurl }] ).one( 'loadedmetadata', function() {
+                    player.currentTime( current_time );
+                    if ( !is_paused ) { player.play(); }
+                });
+                player.videoHD = true;
+            }
+        };
+
+        videojs.plugin('HDPlugin', function( options ) {
+            var player = this;
+            player.chgsrc = function(src) {
+                player.src([{type: "video/mp4", src: src }]);
+                player.play();
+            };
+            var HDPlugin = new videojs.HDPlugin( this, {
+                el : videojs.Component.prototype.createEl( null, {
+                    className: 'vjs-HD-button vjs-control',
+                       innerHTML: '<div class="vjs-control-content">' + ('HD') + '</div>',
+                       role: 'button',
+                       'aria-live': 'polite', 
+                       tabIndex: 0
+                    
+                }),
+                videoHD : false
+            });
+            // Add the button to the control bar object and the DOM
+            this.controlBar.HDPlugin = this.controlBar.addChild( HDPlugin );
+        });
+    }
     /**
     fin HD
     **/
@@ -123,7 +125,7 @@ function DmCloudVideo(runtime, element) {
     var trackload = new Array(); // array contening tracks id and cues (queues ?)
 
     /* Here's where you'd do things on page load. */
-    $(function ($) {
+    //$(function ($) {
         // add 25/09/2014 to force reload player
         if(!myPlayer) {
             delete videojs.players[video_id];
@@ -131,6 +133,7 @@ function DmCloudVideo(runtime, element) {
         if(video_id) {
             videojs(video_id, {}, function(){
                 // Player (this) is initialized and ready.
+                //console.log('Player (this) is initialized and ready.');
                 myPlayer=this;
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
                 //save_user_state
@@ -185,7 +188,7 @@ function DmCloudVideo(runtime, element) {
 
             });
         }//end if video_id
-    });// end function
+    //});// end function
     /**
     Speed video rate
     **/
