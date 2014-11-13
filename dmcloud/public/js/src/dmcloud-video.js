@@ -126,11 +126,12 @@ function DmCloudVideo(runtime, element) {
 
     /* Here's where you'd do things on page load. */
     //$(function ($) {
-        // add 25/09/2014 to force reload player
-        if(!myPlayer) {
-            delete videojs.players[video_id];
-        }
+        
         if(video_id) {
+            if(!myPlayer) {
+                // add 25/09/2014 to force reload player
+                delete videojs.players[video_id];
+            }
             videojs(video_id, {}, function(){
                 // Player (this) is initialized and ready.
                 //console.log('Player (this) is initialized and ready.');
