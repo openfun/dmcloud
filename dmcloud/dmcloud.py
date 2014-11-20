@@ -185,7 +185,6 @@ class DmCloud(XBlock):
                     thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
                     stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
                     assets = self.cloudkey.media.get_assets(id=self.id_video)
-                    #######
                     if assets.get('mp4_h264_aac_hd'):
                         stream_url_hd = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_hd', expires=time.time() + 3600 * 24 * 7)
@@ -195,7 +194,6 @@ class DmCloud(XBlock):
                     #assets = self.cloudkey.media.get_assets(id=self.id_video)
                     subs_url = self.cloudkey.media.get_subs_urls(
                         id=self.id_video, type="srt")
-
                     if self.allow_download_video:
                         download_url_ld = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
@@ -236,7 +234,6 @@ class DmCloud(XBlock):
         #load locally to work with more than one instance on page
         #frag.add_css(self.resource_string("public/css/dmcloud.css"))
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))
-
 
         #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
         #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
