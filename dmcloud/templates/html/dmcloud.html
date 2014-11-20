@@ -5,7 +5,22 @@
     {% if self.id_video %}
         {% if embed_url != "" %}
             <div class="videoplayer"  id="videoplayer_{{id}}">
-                <iframe width="100%" height="360" frameborder="0" scrolling="no" src="{{embed_url}}"></iframe>
+                <div id="dmplayer_{{id}}" class="dmplayer" data-video="{{user_id}}/{{video_id}}" data-auth="{{auth_key}}"></div>
+                {% if self.allow_download_video %}
+                    {% if download_url_ld != "" %}
+                        <ul class="wrapper-downloads">
+                            <li class="video-sources video-download-button">
+                                {% trans "Download video" %} <a href="{{download_url_ld}}" target="_blank" download>Smartphone</a>
+                                {% if download_url_std != "" %}
+                                     - <a href="{{download_url_std}}" target="_blank" download>Standard</a>
+                                {%endif%}
+                                {% if download_url_hd != "" %}
+                                     - <a href="{{download_url_hd}}" target="_blank" download>HD</a>
+                                {%endif%}
+                            </li>
+                        </ul>
+                    {%endif%}
+                {%endif%}
             </div>
         {% else %}
             {% if self.cloudkey and stream_url != "" %}
@@ -41,6 +56,7 @@
                         </ul>
                     {%endif%}
                 {%endif%}
+
                 </div>
                 <div class="dm-subtitle" id="subtitle_{{id}}">&nbsp;</div>
             {%else%}

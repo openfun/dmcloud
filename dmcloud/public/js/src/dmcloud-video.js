@@ -126,7 +126,6 @@ function DmCloudVideo(runtime, element) {
 
     /* Here's where you'd do things on page load. */
     //$(function ($) {
-        
         if(video_id) {
             if(!myPlayer) {
                 // add 25/09/2014 to force reload player

@@ -58,10 +58,11 @@ class DmCloud(XBlock):
         """
         super(DmCloud, self).__init__(runtime, field_data, scope_ids)
         self.cloudkey = None
+        self.univ = None
         try:
             # Get the university from the org code of course
-            univ = University.objects.get(code=self.location.org)
-            self.cloudkey = CloudKey(univ.dm_user_id, univ.dm_api_key)
+            self.univ = University.objects.get(code=self.location.org)
+            self.cloudkey = CloudKey(self.univ.dm_user_id, self.univ.dm_api_key)
         except:
             log.error("university not found")
 
@@ -158,10 +159,22 @@ class DmCloud(XBlock):
         download_url_hd = ""
         thumbnail_url = ""
         subs_url = {}
+        auth_key = ""
+
         if self.id_video != "":
             try:
                 if self.player == "Dailymotion":
-                    embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
+                    #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
+                    embed_url = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7) #It works with api...
+                    auth_index = embed_url.find("auth=")
+                    auth_key = embed_url[auth_index+5:len(embed_url)]
+                    if self.allow_download_video:
+                        download_url_ld = self.cloudkey.media.get_stream_url(
+                            id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
+                        download_url_std = self.cloudkey.media.get_stream_url(
+                            id=self.id_video, download=True, expires=time.time() + 3600 * 24 * 7)
+                        download_url_hd = self.cloudkey.media.get_stream_url(
+                            id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
                 else:
                     #assets['jpeg_thumbnail_source']['stream_url']
                     #mp4_h264_aac
@@ -172,6 +185,7 @@ class DmCloud(XBlock):
                     thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
                     stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
                     assets = self.cloudkey.media.get_assets(id=self.id_video)
+                    #######
                     if assets.get('mp4_h264_aac_hd'):
                         stream_url_hd = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_hd', expires=time.time() + 3600 * 24 * 7)
@@ -181,6 +195,7 @@ class DmCloud(XBlock):
                     #assets = self.cloudkey.media.get_assets(id=self.id_video)
                     subs_url = self.cloudkey.media.get_subs_urls(
                         id=self.id_video, type="srt")
+
                     if self.allow_download_video:
                         download_url_ld = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
@@ -200,6 +215,11 @@ class DmCloud(XBlock):
             'self': self,
             'id': self.location.html_id(),
             'embed_url': embed_url,
+            #dmplayer
+            'auth_key':auth_key,
+            'video_id':self.id_video,
+            'user_id':self.univ.dm_user_id,
+            #end dmplayer
             'download_url_ld': download_url_ld,
             'download_url_std': download_url_std,
             'download_url_hd': download_url_hd,
@@ -220,8 +240,13 @@ class DmCloud(XBlock):
 
         #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
         #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
-        frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
-        frag.initialize_js('DmCloudVideo')
+        frag.add_javascript_url("//api.dmcloud.net/static/dmplayer/dmplayer-sdk.js")
+        if self.player == "Dailymotion":
+            frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
+            frag.initialize_js('DmCloudPlayer')
+        else:
+            frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
+            frag.initialize_js('DmCloudVideo')
 
         return frag
 
