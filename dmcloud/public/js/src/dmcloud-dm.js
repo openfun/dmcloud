@@ -3,13 +3,13 @@ var is_saving_user_state = false;
 
 function DmCloudPlayer(runtime, element) {
     var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
-    console.log("DmCloudPlayer : "+saveHandlerUrl);
+    //console.log("DmCloudPlayer : "+saveHandlerUrl);
     $(element).find('.dmplayer').attr('data-save',saveHandlerUrl);
 }
 
 window.dmAsyncInit = function()
 {
-    console.log("dmAsyncInit");
+    //console.log("dmAsyncInit");
     
     $(".dmplayer").each(function(){
         console.log(this.id);
@@ -22,7 +22,7 @@ window.dmAsyncInit = function()
         player.addEventListener("apiready", function(e)
         {
             //e.target.play();
-            console.log("apiready : " + this.id);
+            //console.log("apiready : " + this.id);
         });
         if(saveurl) {
             player.addEventListener('seeked', function(){ the_save_user_state(this, saveurl);});
@@ -34,16 +34,16 @@ window.dmAsyncInit = function()
 };
 
 function the_save_user_state(theplayer, saveurl) {
-    console.log(theplayer+" - "+saveurl+" - "+parseInt(theplayer.currentTime));
+    //console.log(theplayer+" - "+saveurl+" - "+parseInt(theplayer.currentTime));
     var data = {
         'saved_video_position': parseInt(theplayer.currentTime),
     };
     if(is_saving_user_state===false) {
-        console.log("do");
+        //console.log("do");
         is_saving_user_state=true;
         $.post(saveurl, JSON.stringify(data)).complete(function() {
            //window.location.reload(false);
-           console.log("done");
+           //console.log("done");
            //is_saving_user_state=false;
            setTimeout(function (){
             is_saving_user_state=false;
