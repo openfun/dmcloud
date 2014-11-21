@@ -208,6 +208,7 @@ class DmCloud(XBlock):
 
         #create url for videojs to add it directly in the template
         videojsurl = self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js")
+        dmjsurl = self.runtime.local_resource_url(self, "public/js/src/dmplayer-sdk.js")
 
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
@@ -217,6 +218,7 @@ class DmCloud(XBlock):
             'auth_key':auth_key,
             'video_id':self.id_video,
             'user_id':self.univ.dm_user_id,
+            'dmjsurl':dmjsurl,
             #end dmplayer
             'download_url_ld': download_url_ld,
             'download_url_std': download_url_std,
