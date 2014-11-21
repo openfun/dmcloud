@@ -237,8 +237,9 @@ class DmCloud(XBlock):
 
         #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
         #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
-        frag.add_javascript_url("//api.dmcloud.net/static/dmplayer/dmplayer-sdk.js")
+        
         if self.player == "Dailymotion":
+            #frag.add_javascript_url("//api.dmcloud.net/static/dmplayer/dmplayer-sdk.js")
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
             frag.initialize_js('DmCloudPlayer')
         else:
