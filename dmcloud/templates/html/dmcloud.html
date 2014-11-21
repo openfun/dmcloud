@@ -6,6 +6,14 @@
         {% if embed_url != "" %}
             <div class="videoplayer"  id="videoplayer_{{id}}">
                 <div id="dmplayer_{{id}}" class="dmplayer" data-video="{{user_id}}/{{video_id}}" data-auth="{{auth_key}}"></div>
+                <script>
+                // Load the DMCloud Javascript SDK asynchronously.
+                (function() {
+                    var e = document.createElement('script'); e.async = true;
+                    e.src = "{{dmjsurl}}";
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(e, s);
+                }());
+                </script>
                 {% if self.allow_download_video %}
                     {% if download_url_ld != "" %}
                         <ul class="wrapper-downloads">
