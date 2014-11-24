@@ -163,6 +163,7 @@ class DmCloud(XBlock):
 
         if self.id_video != "":
             try:
+                assets = self.cloudkey.media.get_assets(id=self.id_video)
                 if self.player == "Dailymotion":
                     #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
                     embed_url = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7) #It works with api...
@@ -173,8 +174,12 @@ class DmCloud(XBlock):
                             id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
                         download_url_std = self.cloudkey.media.get_stream_url(
                             id=self.id_video, download=True, expires=time.time() + 3600 * 24 * 7)
-                        download_url_hd = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
+                        if assets.get('mp4_h264_aac_hd'):
+                            download_url_hd = self.cloudkey.media.get_stream_url(
+                                id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
+                        elif assets.get('mp4_h264_aac_hq'):
+                            download_url_hd = self.cloudkey.media.get_stream_url(
+                                id=self.id_video, asset_name='mp4_h264_aac_hq', download=True, expires=time.time() + 3600 * 24 * 7)
                 else:
                     #assets['jpeg_thumbnail_source']['stream_url']
                     #mp4_h264_aac
@@ -184,7 +189,7 @@ class DmCloud(XBlock):
                     #jpeg_thumbnail_medium
                     thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
                     stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
-                    assets = self.cloudkey.media.get_assets(id=self.id_video)
+                    #assets = self.cloudkey.media.get_assets(id=self.id_video)
                     if assets.get('mp4_h264_aac_hd'):
                         stream_url_hd = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_hd', expires=time.time() + 3600 * 24 * 7)
@@ -199,8 +204,12 @@ class DmCloud(XBlock):
                             id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
                         download_url_std = self.cloudkey.media.get_stream_url(
                             id=self.id_video, download=True, expires=time.time() + 3600 * 24 * 7)
-                        download_url_hd = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
+                        if assets.get('mp4_h264_aac_hd'):
+                            download_url_hd = self.cloudkey.media.get_stream_url(
+                                id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
+                        elif assets.get('mp4_h264_aac_hq'):
+                            download_url_hd = self.cloudkey.media.get_stream_url(
+                                id=self.id_video, asset_name='mp4_h264_aac_hq', download=True, expires=time.time() + 3600 * 24 * 7)
             except:
                 msg = u'\n***** DmCloud error :%s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
                 log.error(msg)
