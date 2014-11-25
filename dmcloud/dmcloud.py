@@ -240,8 +240,7 @@ class DmCloud(XBlock):
             "videojsurl": videojsurl
         }))
 
-        #frag.add_css_url("public/videojs-4.6/video-js.css")
-        frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
+        
         #load locally to work with more than one instance on page
         #frag.add_css(self.resource_string("public/css/dmcloud.css"))
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))
@@ -254,6 +253,8 @@ class DmCloud(XBlock):
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
             frag.initialize_js('DmCloudPlayer')
         else:
+            #frag.add_css_url("public/videojs-4.6/video-js.css")
+            frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
             frag.initialize_js('DmCloudVideo')
 
