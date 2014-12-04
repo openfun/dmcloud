@@ -166,9 +166,14 @@ class DmCloud(XBlock):
                 assets = self.cloudkey.media.get_assets(id=self.id_video)
                 if self.player == "Dailymotion":
                     #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
-                    embed_url = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7) #It works with api...
+                    embed_url = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7, secure=False) #It works with api...
                     auth_index = embed_url.find("auth=")
                     auth_key = embed_url[auth_index+5:len(embed_url)]
+                    
+                    embed_urls = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7, secure=True) #It works with api...
+                    auth_indexs = embed_urls.find("auth=")
+                    auth_keys = embed_urls[auth_indexs+5:len(embed_urls)]
+                    
                     if self.allow_download_video:
                         download_url_ld = self.cloudkey.media.get_stream_url(
                             id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
@@ -225,6 +230,7 @@ class DmCloud(XBlock):
             'embed_url': embed_url,
             #dmplayer
             'auth_key':auth_key,
+            'auth_keys':auth_keys,
             'video_id':self.id_video,
             'user_id':self.univ.dm_user_id,
             'dmjsurl':dmjsurl,

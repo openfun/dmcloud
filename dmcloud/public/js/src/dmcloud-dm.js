@@ -18,9 +18,11 @@ function initialisePlayer(){
         if($(this).is('div')){
             var video = $(this).attr('data-video');
             var saveurl = $(this).attr('data-save');
-            console.log(this.id+" - "+video+" - "+saveurl);
+            //console.log(this.id+" - "+video+" - "+saveurl);
+            var keyauth = document.location.protocol==='https:'?$(this).attr('data-auths'):$(this).attr('data-auth');
+            
             var params = {
-                auth: $(this).attr('data-auth'),
+                auth: keyauth,
             };
             var player = DM.player(this.id, {video: video, width: "100%", height: "360", params: params});
             player.addEventListener("apiready", function(e)

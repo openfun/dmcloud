@@ -5,7 +5,7 @@
     {% if self.id_video %}
         {% if embed_url != "" %}
             <div class="videoplayer"  id="videoplayer_{{id}}">
-                <div id="dmplayer_{{id}}" class="dmplayer" data-video="{{user_id}}/{{video_id}}" data-auth="{{auth_key}}"></div>
+                <div id="dmplayer_{{id}}" class="dmplayer" data-video="{{user_id}}/{{video_id}}" data-auth="{{auth_key}}" data-auths="{{auth_keys}}"></div>
                 <script>
                 // Load the DMCloud Javascript SDK asynchronously.
                 (function() {
