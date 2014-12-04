@@ -160,6 +160,7 @@ class DmCloud(XBlock):
         thumbnail_url = ""
         subs_url = {}
         auth_key = ""
+        auth_keys = ""
 
         if self.id_video != "":
             try:
