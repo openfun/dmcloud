@@ -19,7 +19,7 @@ function initialisePlayer(){
             var video = $(this).attr('data-video');
             var saveurl = $(this).attr('data-save');
             //console.log(this.id+" - "+video+" - "+saveurl);
-            var keyauth = document.location.protocol==='https:'?$(this).attr('data-auths'):$(this).attr('data-auth');
+            var keyauth = document.location.protocol==='https:'?$(this).attr('data-auth-secure'):$(this).attr('data-auth');
             
             var params = {
                 auth: keyauth,

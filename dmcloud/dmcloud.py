@@ -3,30 +3,30 @@
 ################################################################################
 # Globals Imports ##############################################################
 
-import pkg_resources
-from pkg_resources import resource_string
-import logging
-
-#from django.utils.translation import ugettext as _
 import gettext
+import logging
 import os
+import pkg_resources
+import requests
+import time
+from webob import Response  # send response from handler
 
 # Set up message catalog access
+from django.template import Context, Template
 from django.utils import translation as trans
 LANGUAGE = trans.get_language()
-t = gettext.translation('dmcloud', os.path.join(os.path.dirname(os.path.realpath(__file__)), 'locale'), languages=[LANGUAGE], fallback=True)
+t = gettext.translation(
+    'dmcloud',
+    os.path.join(
+        os.path.dirname(os.path.realpath(__file__)), 'locale'),
+    languages=[LANGUAGE], fallback=True
+)
 _ = t.ugettext
 
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, Boolean
 
 from xblock.fragment import Fragment
-from django.template import Context, Template
-
-from webob import Response  # send response from handler
-
-import time
-import sys
 
 ################################################################################
 #  Globals Var #################################################################
@@ -35,14 +35,15 @@ log = logging.getLogger(__name__)
 ################################################################################
 #  Specifics Imports ###########################################################
 try:
-    from cloudkey import CloudKey
-    from cloudkey import sign_url
-except:
+    from cloudkey import CloudKey, SerializerError
+except ImportError:
     log.error("You have to install cloudkey before using this block")
+    raise
 try:
     from universities.models import University
-except:
+except ImportError:
     log.error("You have to install universities application before using this block")
+    raise
 
 
 ################################################################################
@@ -51,27 +52,8 @@ class DmCloud(XBlock):
     XBlock providing a video player for videos hosted on DMCloud
     This Xblock show video in iframe using DMCloud Api and video_id
     """
-    def __init__(self, runtime, field_data, scope_ids):
-        """
-        Initiate couldKey to get video url with video_id
-        Get the university from the organisation code fill during creating course
-        """
-        super(DmCloud, self).__init__(runtime, field_data, scope_ids)
-        self.cloudkey = None
-        self.univ = None
-        try:
-            # Get the university from the org code of course
-            self.univ = University.objects.get(code=self.location.org)
-            self.cloudkey = CloudKey(self.univ.dm_user_id, self.univ.dm_api_key)
-        except:
-            log.error("university not found")
 
-    # Fields are defined on the class.  You can access them in your code as
-    # self.<fieldname>.
-    #title = String(help=_('Title of the video'), default=_('My new video'), scope=Scope.content, display_name=_('Title'))
-
-    video_time = 0
-    icon_class = 'video'
+    URL_TIMEOUT = 3600 * 24 * 7
 
     # To make sure that js files are called in proper order we use numerical
     # index. We do that to avoid issues that occurs in tests.
@@ -104,20 +86,6 @@ class DmCloud(XBlock):
         default=0
     )
 
-    playback_rate = String(
-        display_name=_("Playback rate"),
-        help=_("Change current speed of the video"),
-        scope=Scope.user_state,
-        values=[
-            {'name': "2 (%s)" % _("Faster"), 'val': "2.0"},
-            {'name': "1.5 (%s)" % _("Faster"), 'val': "1.5"},
-            {'name': "%s" % _("Real time"), 'val': "1.0"},
-            {'name': "0.7 (%s)" % _("Slower"), 'val': "0.7"},
-            {'name': "0.5 (%s)" % _("Slower"), 'val': "0.5"},
-        ],
-        default="1.0"
-    )
-
     player = String(
         display_name=_("Player"),
         help=_("Player use to display the video"),
@@ -129,15 +97,44 @@ class DmCloud(XBlock):
         default="HTML5"
     )
 
+
+    def __init__(self, *args, **kwargs):
+        super(DmCloud, self).__init__(*args, **kwargs)
+        self._cloudkey = None
+        self._univ = None
+
+    @property
+    def univ(self):
+        """
+        Get the university from the organisation code filled during the course creation.
+        """
+        if self._univ is None:
+            try:
+                self._univ = University.objects.get(code=self.location.org)
+            except University.DoesNotExist:
+                log.error("university not found: %s", self.location.org)
+                raise
+        return self._univ
+
+    @property
+    def cloudkey(self):
+        """
+        Initialize cloudKey to get video url with video_id.
+        """
+        if self._cloudkey is None:
+            self._cloudkey = CloudKey(self.univ.dm_user_id, self.univ.dm_api_key)
+        return self._cloudkey
+
     def resource_string(self, path):
         """Gets the content of a resource"""
         data = pkg_resources.resource_string(__name__, path)
         return data.decode("utf8")
 
-    def render_template(self, template_path, context={}):
+    def render_template(self, template_path, context=None):
         """
         Evaluate a template by resource path, applying the provided context
         """
+        context = context or {}
         template_str = self.resource_string(template_path)
         template = Template(template_str)
         return template.render(Context(context))
@@ -150,8 +147,6 @@ class DmCloud(XBlock):
         # VIDEO MODULE
         #
         #### => work and load dailymotion cloud player
-        frag = Fragment()
-        embed_url = ""
         stream_url = ""
         stream_url_hd = ""
         download_url_ld = ""
@@ -160,78 +155,48 @@ class DmCloud(XBlock):
         thumbnail_url = ""
         subs_url = {}
         auth_key = ""
-        auth_keys = ""
+        auth_key_secure = ""
 
         if self.id_video != "":
-            try:
-                assets = self.cloudkey.media.get_assets(id=self.id_video)
-                if self.player == "Dailymotion":
-                    #embed_url = self.cloudkey.media.get_embed_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
-                    embed_url = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7, secure=False) #It works with api...
-                    auth_index = embed_url.find("auth=")
-                    auth_key = embed_url[auth_index+5:len(embed_url)]
-                    
-                    embed_urls = self.cloudkey.media._get_url(base_path="/player/embed", id=self.id_video, expires=time.time() + 3600 * 24 * 7, secure=True) #It works with api...
-                    auth_indexs = embed_urls.find("auth=")
-                    auth_keys = embed_urls[auth_indexs+5:len(embed_urls)]
-                    
-                    if self.allow_download_video:
-                        download_url_ld = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
-                        download_url_std = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, download=True, expires=time.time() + 3600 * 24 * 7)
-                        if assets.get('mp4_h264_aac_hd'):
-                            download_url_hd = self.cloudkey.media.get_stream_url(
-                                id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
-                        elif assets.get('mp4_h264_aac_hq'):
-                            download_url_hd = self.cloudkey.media.get_stream_url(
-                                id=self.id_video, asset_name='mp4_h264_aac_hq', download=True, expires=time.time() + 3600 * 24 * 7)
-                else:
-                    #assets['jpeg_thumbnail_source']['stream_url']
-                    #mp4_h264_aac
-                    #mp4_h264_aac_ld
-                    #mp4_h264_aac_hq -> 480
-                    #mp4_h264_aac_hd -> 720
-                    #jpeg_thumbnail_medium
-                    thumbnail_url = self.cloudkey.media.get_stream_url(id=self.id_video, asset_name='jpeg_thumbnail_source')
-                    stream_url = self.cloudkey.media.get_stream_url(id=self.id_video, expires=time.time() + 3600 * 24 * 7)
-                    #assets = self.cloudkey.media.get_assets(id=self.id_video)
-                    if assets.get('mp4_h264_aac_hd'):
-                        stream_url_hd = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_hd', expires=time.time() + 3600 * 24 * 7)
-                    elif assets.get('mp4_h264_aac_hq'):
-                        stream_url_hd = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_hq', expires=time.time() + 3600 * 24 * 7)
-                    #assets = self.cloudkey.media.get_assets(id=self.id_video)
-                    subs_url = self.cloudkey.media.get_subs_urls(
-                        id=self.id_video, type="srt")
-                    if self.allow_download_video:
-                        download_url_ld = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, asset_name='mp4_h264_aac_ld', download=True, expires=time.time() + 3600 * 24 * 7)
-                        download_url_std = self.cloudkey.media.get_stream_url(
-                            id=self.id_video, download=True, expires=time.time() + 3600 * 24 * 7)
-                        if assets.get('mp4_h264_aac_hd'):
-                            download_url_hd = self.cloudkey.media.get_stream_url(
-                                id=self.id_video, asset_name='mp4_h264_aac_hd', download=True, expires=time.time() + 3600 * 24 * 7)
-                        elif assets.get('mp4_h264_aac_hq'):
-                            download_url_hd = self.cloudkey.media.get_stream_url(
-                                id=self.id_video, asset_name='mp4_h264_aac_hq', download=True, expires=time.time() + 3600 * 24 * 7)
-            except:
-                msg = u'\n***** DmCloud error :%s - %s' % (sys.exc_info()[0], sys.exc_info()[1])
-                log.error(msg)
-                print msg
+            assets = self.cloudkey.media.get_assets(id=self.id_video)
+            if self.player == "Dailymotion":
+                auth_key = self.get_dailymotion_auth_key(False)
+                auth_key_secure = self.get_dailymotion_auth_key(True)
+
+            else:
+                #assets['jpeg_thumbnail_source']['stream_url']
+                #mp4_h264_aac
+                #mp4_h264_aac_ld
+                #mp4_h264_aac_hq -> 480
+                #mp4_h264_aac_hd -> 720
+                #jpeg_thumbnail_medium
+                thumbnail_url = self.cloudkey.media.get_stream_url(
+                    id=self.id_video, asset_name='jpeg_thumbnail_source'
+                )
+                stream_url = self.get_stream_url()
+                if assets.get('mp4_h264_aac_hd'):
+                    stream_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=False)
+                elif assets.get('mp4_h264_aac_hq'):
+                    stream_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=False)
+                subs_url = self.get_subs_url()
+            if self.allow_download_video:
+                download_url_ld = self.get_stream_url('mp4_h264_aac_ld', download=True)
+                download_url_std = self.get_stream_url(download=True)
+                if assets.get('mp4_h264_aac_hd'):
+                    download_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=True)
+                elif assets.get('mp4_h264_aac_hq'):
+                    download_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=True)
 
         #create url for videojs to add it directly in the template
-        videojsurl = self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js")
         dmjsurl = self.runtime.local_resource_url(self, "public/js/src/dmplayer-sdk.js")
 
+        frag = Fragment()
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
             'id': self.location.html_id(),
-            'embed_url': embed_url,
             #dmplayer
             'auth_key':auth_key,
-            'auth_keys':auth_keys,
+            'auth_key_secure':auth_key_secure,
             'video_id':self.id_video,
             'user_id':self.univ.dm_user_id,
             'dmjsurl':dmjsurl,
@@ -244,29 +209,50 @@ class DmCloud(XBlock):
             'subs_url': subs_url,
             'thumbnail_url': thumbnail_url,
             "transcript_url": self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
-            "videojsurl": videojsurl
         }))
 
-        
+
         #load locally to work with more than one instance on page
-        #frag.add_css(self.resource_string("public/css/dmcloud.css"))
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))
 
-        #frag.add_javascript(self.resource_string("public/video-js-4.6-full/video.js"))
-        #frag.add_javascript_url(self.runtime.local_resource_url(self,"public/video-js-4.6-full/video.js"))
-        
         if self.player == "Dailymotion":
-            #frag.add_javascript_url("//api.dmcloud.net/static/dmplayer/dmplayer-sdk.js")
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
             frag.initialize_js('DmCloudPlayer')
         else:
-            #frag.add_css_url("public/videojs-4.6/video-js.css")
             frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
             frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js"))
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
             frag.initialize_js('DmCloudVideo')
 
         return frag
+
+    def get_dailymotion_auth_key(self, secure):
+        embed_url = self.get_embed_url(secure)
+        auth_index = embed_url.find("auth=")
+        auth_keys = embed_url[auth_index+5:len(embed_url)]
+        return auth_keys
+
+    def get_embed_url(self, secure):
+        return self.cloudkey.media._get_url(
+            base_path="/player/embed",
+            id=self.id_video,
+            expires=time.time() + self.URL_TIMEOUT,
+            secure=secure
+        )
+
+    def get_stream_url(self, asset_name='mp4_h264_aac', download=False):
+        return self.cloudkey.media.get_stream_url(
+            id=self.id_video,
+            asset_name=asset_name,
+            download=download,
+            expires=time.time() + self.URL_TIMEOUT
+        )
+
+    def get_subs_url(self):
+        try:
+            return self.cloudkey.media.get_subs_urls(id=self.id_video, type="srt")
+        except SerializerError:
+            return ""
 
     def studio_view(self, context=None):
         """
@@ -287,7 +273,7 @@ class DmCloud(XBlock):
                 'message': 'You should give a video ID'
             }
         else:
-            log.info(u'Received submissions: {}'.format(submissions))
+            log.info(u'Received submissions: %s', submissions)
             self.display_name = submissions['display_name']
             self.id_video = submissions['id_video'].strip()
             self.allow_download_video = submissions['allow_download_video']
@@ -299,8 +285,6 @@ class DmCloud(XBlock):
 
     @XBlock.json_handler
     def save_user_state(self, submissions, suffix=''):
-        #print u'Received submissions: {}'.format(submissions)
-        #log.info(u'Received submissions: {}'.format(submissions))
         self.saved_video_position = submissions['saved_video_position']
         response = {
             'result': 'success',
@@ -309,9 +293,7 @@ class DmCloud(XBlock):
 
     @XBlock.handler
     def transcript(self, request, dispatch):
-        #print "REQUEST GET: %s" %request.GET.get('url')
         if request.GET.get('url'):
-            import requests
             r = requests.get(request.GET.get('url'))
             response = Response("%s" % r.content)
             response.content_type = 'text/plain'
