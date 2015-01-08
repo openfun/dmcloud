@@ -24,7 +24,7 @@ function initialisePlayer(){
             var params = {
                 auth: keyauth,
             };
-            var player = DM.player(this.id, {video: video, width: "100%", height: "360", params: params});
+            var player = DM.player(this.id, {video: video, width: "100%", height: "375px", params: params});
             player.addEventListener("apiready", function(e)
             {
                 //e.target.play();
