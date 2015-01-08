@@ -86,7 +86,8 @@ function DmCloudVideo(runtime, element) {
             $("#"+subtitle_id).show();
             //$("#"+videoplayer_id).attr('style','width:55%;float:left');
             $("#"+videoplayer_id).attr('style','width:61%;float:left');
-            $("#"+videoplayer_id).find(".vjs-control").css('width','3em');
+            //$("#"+videoplayer_id).find(".vjs-control").css('width','3em');
+            $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','3em');            
         }
         //console.log("showCues "+subtitle_id);
         document.getElementById(subtitle_id).innerHTML = ""; //Open/Close <span class=\"togglesub\">&nbsp;</span><br/>
