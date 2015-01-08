@@ -1,19 +1,16 @@
 /* CSS for DmCloud */
 .dm-subtitle {
-    width:38%; /*44%;*/
-    /*float:right;*/
-    position:relative;
+    width: 38%;
+    position: relative;
     right:1px;
     left: 1px;
-    height:355px;
-    overflow-y:auto;
-    display:none;
-    /*border:1px solid grey;*/
+    height: 370px;
+    overflow-y: auto;
+    display: none;
     border-radius: 3px 0 0 3px;
     border: 1px solid #c4bfab;
     margin-left: 2px;
-    padding:2px;
-    /*background-color:#f2f2f2;*/
+    padding: 2px;
 }
 .subtitle_toggle {
     /*float:right;*/
