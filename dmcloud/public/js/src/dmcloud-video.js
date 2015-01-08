@@ -195,12 +195,12 @@ function DmCloudVideo(runtime, element) {
         if($("#"+subtitle_id).is(':visible')) {
             $("#"+subtitle_id).hide();
             $("#"+videoplayer_id).attr('style','width:100%;float:left');
-            $("#"+videoplayer_id).find(".vjs-control").css('width','4em');
+            $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','4em');  
         }else{
             $("#"+subtitle_id).show();
             //$("#"+videoplayer_id).attr('style','width:55%;float:left');
             $("#"+videoplayer_id).attr('style','width:61%;float:left');
-            $("#"+videoplayer_id).find(".vjs-control").css('width','3em');
+            $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','3em');  
         }
     });
 }
