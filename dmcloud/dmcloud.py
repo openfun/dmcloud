@@ -92,6 +92,7 @@ class DmCloud(XBlock):
         scope=Scope.settings,
         values=[
             {'name': "HTML5", 'val': "HTML5"},
+            {'name': "MFP", 'val': "Access Player MFP"},
             {'name': "Dailymotion", 'val': "Dailymotion"},
         ],
         default="HTML5"
@@ -179,6 +180,7 @@ class DmCloud(XBlock):
                 elif assets.get('mp4_h264_aac_hq'):
                     stream_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=False)
                 subs_url = self.get_subs_url()
+
             if self.allow_download_video:
                 download_url_ld = self.get_stream_url('mp4_h264_aac_ld', download=True)
                 download_url_std = self.get_stream_url(download=True)
@@ -211,6 +213,7 @@ class DmCloud(XBlock):
             "transcript_url": self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
         }))
 
+        print "***** PLAYER : %s ******" %self.player
 
         #load locally to work with more than one instance on page
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))
@@ -218,6 +221,16 @@ class DmCloud(XBlock):
         if self.player == "Dailymotion":
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
             frag.initialize_js('DmCloudPlayer')
+        elif self.player == "MFP":
+            #add css for mfp player
+            frag.add_css_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/video-js/video-js.css"))
+            frag.add_css_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/styles/styles.css"))
+            #add js for mfp player
+            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/settings.js"))
+            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/video-js/video.dev.js"))
+            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/subtitles.js"))
+            frag.add_javascript(self.resource_string("public/js/src/dmcloud-mfp.js"))
+            frag.initialize_js('DmCloudMFPVideo')
         else:
             frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
             frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js"))

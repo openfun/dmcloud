@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<title>Intégration du player HTML5 (avec sous-titres et audiodescription)</title>
+		<!-- VideoJS -->
+		<link rel="stylesheet" href="client/scripts/video-js/video-js.css" type="text/css" />
+		<!-- Personnalisation -->
+		<link rel="stylesheet" href="client/styles/styles.css" type="text/css" />
+		<!-- Internationalisation, images de l'interface et couleurs (paramètres des sous-titres) -->
+		<script src="client/scripts/settings.js" type="text/javascript"></script>
+		<!-- Fork VideoJS -->
+		<script src="client/scripts/video-js/video.dev.js" type="text/javascript"></script>
+		<!-- Fonctions liées aux paramètres des sous-titres -->
+		<script src="client/scripts/subtitles.js" type="text/javascript"></script>
+		<!-- Utilisation de VideoJS -->
+		<script type="text/javascript">
+			window.addEventListener('DOMContentLoaded', function(event) {
+				videojs(video.getAttribute('id'), { preload: 'auto' }, function () {
+					this.addClass('video-js');
+					this.addClass('vjs-default-skin');
+				});
+			}, false);
+		</script>
+	</head>
+	<body>
+		<h1>Intégration du player HTML5 (avec sous-titres et audiodescription)</h1>
+				<div id="player">
+					<video id="video" controls="controls" height="480" width="640">
+						<source src="client/medias/video_vo.mp4" type="video/mp4" />
+						<source src="client/medias/video_vo.webm" type="video/webm" />
+						<source src="client/medias/video_vo.ogv" type="video/ogg" />
+						<track kind="captions" label="Français" src="client/captions/fr.srt" srclang="fr" />
+					<ul class="transcriptlist">
+						<li><a href="mytrancriptFile.htm" title="Transcription française - HTML - nouvelle fenêtre">Transcription française - HTML</a></li>
+						<li><a href="server/transcriptions/fr.txt" title="Transcription du sous-titrage - TXT">Transcription du sous-titrage - TXT</a></li>
+					</ul>
+					</video>
+					<audio src="client/medias/videosample.mp3" preload="auto" hidden="hidden"></audio>
+				</div>
+	</body>
+</html>

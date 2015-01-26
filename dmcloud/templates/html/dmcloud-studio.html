@@ -34,6 +34,7 @@
                 <select name="Player Video" id="dmcloud_player_video" class="input setting-input">
                    <option value="HTML5" {% if self.player == "HTML5" %}selected{%endif%}>{% trans "HTML5" %}</option>
                    <option value="Dailymotion" {% if self.player == "Dailymotion" %}selected{%endif%}>{% trans "Dailymotion" %}</option>
+                   <option value="MFP" {% if self.player == "MFP" %}selected{%endif%}>{% trans "Lecteur accessible" %}</option>
                 </select>
             </div>
             <span class="tip setting-help">{{self.fields.player.help}}</span>
