@@ -191,7 +191,7 @@ class DmCloud(XBlock):
 
         #create url for videojs to add it directly in the template
         dmjsurl = self.runtime.local_resource_url(self, "public/js/src/dmplayer-sdk.js")
-
+        mfpbasepath = self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/settings.js")[:self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/settings.js").index('client')]
         frag = Fragment()
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
@@ -203,6 +203,7 @@ class DmCloud(XBlock):
             'user_id':self.univ.dm_user_id,
             'dmjsurl':dmjsurl,
             #end dmplayer
+            'mfpbasepath':mfpbasepath,
             'download_url_ld': download_url_ld,
             'download_url_std': download_url_std,
             'download_url_hd': download_url_hd,
@@ -212,8 +213,6 @@ class DmCloud(XBlock):
             'thumbnail_url': thumbnail_url,
             "transcript_url": self.runtime.handler_url(self, 'transcript', 'translation').rstrip('/?'),
         }))
-
-        print "***** PLAYER : %s ******" %self.player
 
         #load locally to work with more than one instance on page
         frag.add_css_url(self.runtime.local_resource_url(self, "public/css/dmcloud.css"))

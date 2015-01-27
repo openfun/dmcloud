@@ -1,6 +1,25 @@
 /* Javascript for DmCloud video. */
-function DmCloudMFPVideo(runtime, element) {
+function DmCloudMFPVideo(runtime, element, data) {
     console.log("DmCloudMFPVideo");
+    /*console.log(uiControls);
+    console.log(runtime);
+    console.log(data.local_ressource_url);
+    basepath = data.local_ressource_url.substring(0, data.local_ressource_url.indexOf('client'));
+    console.log(basepath);
+    for(key in uiControls ){
+        if(typeof uiControls[key] === 'string' && uiControls[key].indexOf('client')!=-1)
+            uiControls[key] = basepath+uiControls[key];
+        else {
+            for(subkey in uiControls[key] ){
+                if(typeof uiControls[key][subkey] === 'string' && uiControls[key][subkey].indexOf('client')!=-1)
+                    uiControls[key][subkey] = basepath+uiControls[key][subkey];
+            }
+        }
+    }
+    console.log("---DmCloudMFPVideo---");
+    */
+
+
     var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
     
     var myPlayer;
