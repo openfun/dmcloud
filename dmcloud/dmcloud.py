@@ -226,6 +226,27 @@ class DmCloud(XBlock):
             frag.add_css_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/styles/styles.css"))
             #add js for mfp player
             frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/settings.js"))
+            jsmfp = """var uiControls = {
+                            playControl: {
+                                play: '%(mfpbasepath)sclient/images/play.png',
+                                pause: '%(mfpbasepath)sclient/images/pause.png'
+                            },
+                            captionsControl: '%(mfpbasepath)sclient/images/captions.png',
+                            configControl: '%(mfpbasepath)sclient/images/config.png',
+                            audiodescriptionControl: '%(mfpbasepath)sclient/images/audiodescription.png',
+                            transcriptControl: '%(mfpbasepath)sclient/images/transcript.png',
+                            muteControl: {
+                                mute: '%(mfpbasepath)sclient/images/mute.png',
+                                unmute: '%(mfpbasepath)sclient/images/unmute.png'
+                            },
+                            fullscreenControl: {
+                                fullscreen: '%(mfpbasepath)sclient/images/fullscreen.png',
+                                nonfullscreen: '%(mfpbasepath)sclient/images/nonfullscreen.png'
+                            },
+                            closeControl: '%(mfpbasepath)sclient/images/close.png'
+                        };""" %{"mfpbasepath":mfpbasepath}
+            frag.add_javascript(jsmfp)
+            
             frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/video-js/video.dev.js"))
             frag.add_javascript_url(self.runtime.local_resource_url(self, "public/MFPvideoPlayer/client/scripts/subtitles.js"))
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-mfp.js"))

@@ -85,7 +85,7 @@ var i18n = {
 Controls images
 complete with your server paths
 */
-/*
+if(!uiControls) {
 var uiControls = {
 	playControl: {
 		play: 'client/images/play.png',
@@ -105,7 +105,7 @@ var uiControls = {
 	},
 	closeControl: 'client/images/close.png'
 };
-*/
+}
 /* Set Captions configuration*/
 // Default font-size
 // 10 = 1 em

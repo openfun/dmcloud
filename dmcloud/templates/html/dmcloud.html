@@ -33,43 +33,18 @@
         {% else %}
             {% if self.cloudkey and stream_url != "" %}
                 {% if self.player == "MFP" %}
-                    <script>/*
-Controls images
-complete with your server paths
-*/
-var uiControls = {
-    playControl: {
-        play: '{{mfpbasepath}}client/images/play.png',
-        pause: '{{mfpbasepath}}client/images/pause.png'
-    },
-    captionsControl: '{{mfpbasepath}}client/images/captions.png',
-    configControl: '{{mfpbasepath}}client/images/config.png',
-    audiodescriptionControl: '{{mfpbasepath}}client/images/audiodescription.png',
-    transcriptControl: '{{mfpbasepath}}client/images/transcript.png',
-    muteControl: {
-        mute: '{{mfpbasepath}}client/images/mute.png',
-        unmute: '{{mfpbasepath}}client/images/unmute.png'
-    },
-    fullscreenControl: {
-        fullscreen: '{{mfpbasepath}}client/images/fullscreen.png',
-        nonfullscreen: '{{mfpbasepath}}client/images/nonfullscreen.png'
-    },
-    closeControl: '{{mfpbasepath}}client/images/close.png'
-};
-</script>
-                    <div class="videoplayer" id="player" > <!-- id="videoplayer_{{id}}" -->
-                        <video id='video_{{id}}' width="100%" height="375px" controls poster="{{thumbnail_url}}"
-                            >
-                            
-                            <source id='mp4_{{id}}' src="{{stream_url}}" type='video/mp4'>
-                            <!--
-                            {% for lang, url in subs_url.items %}
-                            <track src="{{transcript_url}}?url={{url|urlencode}}" kind="captions" srclang="{{lang}}" label="Français" />
-                            {%endfor%}
-                            -->
-                            <track kind="captions" label="Français" src="{{mfpbasepath}}client/captions/fr.srt" srclang="fr" />
-                        </video>
-                        <audio src="http://access42.net/squelettes/MFPvideoPlayer-1.0.1/client/medias/jamy_clean_AD.mp3" preload="auto" hidden="hidden"></audio>
+
+<div>
+<div id="player">
+    <video id="video_{{id}}" controls="controls" height="480" width="640">
+        <source src="{{stream_url}}" type="video/mp4" />
+        {% for lang, url in subs_url.items %}
+        <track kind="captions" label="Français" src="{{transcript_url}}?url={{url|urlencode}}" srclang="fr" />
+        {% endfor %}
+    </video>
+    <audio src="http://access42.net/squelettes/MFPvideoPlayer-1.0.1/client/medias/jamy_clean_AD.mp3" preload="auto" hidden="hidden"></audio>
+</div>
+                     
                     {% if self.allow_download_video %}
                         {% if download_url_ld != "" %}
                             <ul class="wrapper-downloads">

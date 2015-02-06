@@ -59,12 +59,16 @@ function DmCloudMFPVideo(runtime, element, data) {
     /* Here's where you'd do things on page load. */
     //$(function ($) {
         if(video_id) {
+            
             if(!myPlayer) {
                 // add 25/09/2014 to force reload player
+                console.log("myPlayer "+myPlayer);
                 delete videojs.players[video_id];
+                console.log("deleted");
             }
+            console.log("VIDEO_ID "+video_id);
             
-            videojs(video_id, {preload: 'auto'}, function(){
+            videojs(video_id, {preload: 'none'}, function(){
                 // Player (this) is initialized and ready.
                 console.log('Player (this) is initialized and ready.');
                 myPlayer=this;
@@ -72,12 +76,13 @@ function DmCloudMFPVideo(runtime, element, data) {
                 this.addClass('vjs-default-skin');
                 //console.log($("#"+myPlayer.id()).children(':first').is("object"));
                 //save_user_state
-                /*
-                myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
-                myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
-                myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
-                */
+                
+                //myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
+                //myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
+                //myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+                
             });
+            
             
         }//end if video_id
     //});// end function
