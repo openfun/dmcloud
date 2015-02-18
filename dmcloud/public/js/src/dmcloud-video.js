@@ -1,10 +1,9 @@
-/* Javascript for DmCloud video. */
 function DmCloudVideo(runtime, element) {
-    //console.log($('.xblock-save-button', element));
     var saveHandlerUrl = runtime.handlerUrl(element, 'save_user_state');
     
     var myPlayer;
     var video_id = $(element).find('video').attr('id');
+    var global_id = video_id.replace(/video_/, '');
     var hdurl = $(element).find('video').attr('HD');
     var sdurl = $(element).find('video').attr('SD');
     var select_id = $(element).find('select').attr('id');
@@ -113,8 +112,6 @@ function DmCloudVideo(runtime, element) {
         if(is_saving_user_state===false) {
             is_saving_user_state=true;
             $.post(saveHandlerUrl, JSON.stringify(data)).complete(function() {
-               //window.location.reload(false);
-               //is_saving_user_state=false;
                setTimeout(function (){
                 is_saving_user_state=false;
                }, 1000);
@@ -129,18 +126,25 @@ function DmCloudVideo(runtime, element) {
     //$(function ($) {
         if(video_id) {
             if(!myPlayer) {
-                // add 25/09/2014 to force reload player
                 delete videojs.players[video_id];
             }
             videojs(video_id, {}, function(){
-                // Player (this) is initialized and ready.
-                //console.log('Player (this) is initialized and ready.');
+                log('video_player_ready', {}, video_id.replace(/video_/, ''));
                 myPlayer=this;
-                //console.log($("#"+myPlayer.id()).children(':first').is("object"));
-                //save_user_state
-                myPlayer.on('seeked', function(){ save_user_state(saveHandlerUrl);});
-                myPlayer.on('ended', function(){ save_user_state(saveHandlerUrl);});
-                myPlayer.on('pause', function(){ save_user_state(saveHandlerUrl);});
+                myPlayer.on('seeked', function(){
+                    save_user_state(saveHandlerUrl);
+                    log('seek_video', { 'new_time': parseInt(myPlayer.currentTime())});
+                });
+                myPlayer.on('ended', function(){
+                    save_user_state(saveHandlerUrl);
+                    log('stop_video', { 'currentTime': parseInt(myPlayer.currentTime())} );
+                });
+                myPlayer.on('pause', function(){ 
+                    save_user_state(saveHandlerUrl);
+                    log('pause_video', { 'currentTime': parseInt(myPlayer.currentTime()) }); 
+                });
+                myPlayer.on('play', function(){ log( 'play_video', { 'currentTime': parseInt(myPlayer.currentTime()) }); });
+                myPlayer.on('loadstart', function(){ log('load_video', {},); });
 
                 myPlayer.sdurl = sdurl;
                 myPlayer.hdurl = hdurl;
@@ -196,13 +200,60 @@ function DmCloudVideo(runtime, element) {
             $("#"+subtitle_id).hide();
             $("#"+videoplayer_id).attr('style','width:100%;float:left');
             $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','4em');  
+            log(
+                'video_hide_subtitle',
+                { 
+                    'currentTime': parseInt(myPlayer.currentTime()),
+                },
+                video_id.replace(/video_/, '')
+            );
         }else{
             $("#"+subtitle_id).show();
-            //$("#"+videoplayer_id).attr('style','width:55%;float:left');
             $("#"+videoplayer_id).attr('style','width:61%;float:left');
             $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','3em');  
+            log(
+                'video_show_subtitle',
+                { 
+                    'currentTime': parseInt(myPlayer.currentTime()),
+                },
+                video_id.replace(/video_/, '')
+            );
+
         }
     });
+    /**
+    event to track into tracking file play back rate 
+    **/
+    $(element).find('.vjs-playback-rate').click(function() {
+        log(
+            'speed_change_video',
+            { 
+                'currentTime': parseInt(myPlayer.currentTime()),
+                'newSpeed' : myPlayer.playbackRate()
+            },
+            video_id.replace(/video_/, '')
+        );
+    });
+    /**
+    send log event to save it into tracking file 
+    **/
+    function log(eventName, data) {
+        var logInfo;
+    
+        // Default parameters that always get logged.
+        logInfo = {
+            id: global_id
+        };
+    
+        // If extra parameters were passed to the log.
+        if (data) {
+            $.each(data, function (paramName, value) {
+                logInfo[paramName] = value;
+            });
+        }
+    
+        Logger.log(eventName, logInfo);
+    }
 }
 
 function showTime(totalSec) {
