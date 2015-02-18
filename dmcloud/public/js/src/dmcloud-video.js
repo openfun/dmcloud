@@ -77,8 +77,6 @@ function DmCloudVideo(runtime, element) {
     /**
     fin HD
     **/
-
-
     var showCues = function(cues) {
         if(!$("."+subtitle_id).is(':visible')) {
             $("."+subtitle_id).show();
@@ -92,9 +90,6 @@ function DmCloudVideo(runtime, element) {
 
         for (var j = 0; j < cues.length; ++j) {
             var cue = cues[j];
-            //console.log("cue "+j+" - "+cue.text);
-            // do something
-            //document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\" end=\""+cue.endTime+"\" \">&nbsp;-&nbsp;"+showTime(parseInt(cue.startTime))+" "+cue.text + "</span><br/>");
             document.getElementById(subtitle_id).innerHTML += ("<span class=\"cue\" id=\""+subtitle_id+"_cue_"+cue.id+"\" begin=\""+cue.startTime+"\">&nbsp;-&nbsp;"+cue.text+"</span><br/>");
         }
 
@@ -143,8 +138,8 @@ function DmCloudVideo(runtime, element) {
                     save_user_state(saveHandlerUrl);
                     log('pause_video', { 'currentTime': parseInt(myPlayer.currentTime()) }); 
                 });
-                myPlayer.on('play', function(){ log( 'play_video', { 'currentTime': parseInt(myPlayer.currentTime()) }); });
-                myPlayer.on('loadstart', function(){ log('load_video', {},); });
+                myPlayer.on('play', function(){ log( 'play_video', { 'currentTime': parseInt(myPlayer.currentTime()) }) });
+                myPlayer.on('loadstart', function(){ log('load_video', {}) });
 
                 myPlayer.sdurl = sdurl;
                 myPlayer.hdurl = hdurl;
@@ -200,39 +195,22 @@ function DmCloudVideo(runtime, element) {
             $("#"+subtitle_id).hide();
             $("#"+videoplayer_id).attr('style','width:100%;float:left');
             $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','4em');  
-            log(
-                'video_hide_subtitle',
-                { 
-                    'currentTime': parseInt(myPlayer.currentTime()),
-                },
-                video_id.replace(/video_/, '')
-            );
+            log('video_hide_subtitle', { 'currentTime': parseInt(myPlayer.currentTime()), } );
         }else{
             $("#"+subtitle_id).show();
             $("#"+videoplayer_id).attr('style','width:61%;float:left');
             $("#"+videoplayer_id).find('.vjs-control[role="button"]').css('width','3em');  
-            log(
-                'video_show_subtitle',
-                { 
-                    'currentTime': parseInt(myPlayer.currentTime()),
-                },
-                video_id.replace(/video_/, '')
-            );
-
+            log('video_show_subtitle', { 'currentTime': parseInt(myPlayer.currentTime()), } );
         }
     });
     /**
     event to track into tracking file play back rate 
     **/
     $(element).find('.vjs-playback-rate').click(function() {
-        log(
-            'speed_change_video',
-            { 
+        log('speed_change_video', { 
                 'currentTime': parseInt(myPlayer.currentTime()),
                 'newSpeed' : myPlayer.playbackRate()
-            },
-            video_id.replace(/video_/, '')
-        );
+        });
     });
     /**
     send log event to save it into tracking file 
