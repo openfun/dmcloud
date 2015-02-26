@@ -68,7 +68,7 @@ function DmCloudMFPVideo(runtime, element, data) {
             }
             console.log("VIDEO_ID "+video_id);
             
-            videojs(video_id, {preload: 'none'}, function(){
+            videojs(video_id, {preload: 'auto'}, function(){
                 // Player (this) is initialized and ready.
                 console.log('Player (this) is initialized and ready.');
                 myPlayer=this;
