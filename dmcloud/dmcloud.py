@@ -103,6 +103,10 @@ class DmCloud(XBlock):
         self._cloudkey = None
         self._univ = None
 
+    def get_icon_class(self):
+        """Return the CSS class to be used in courseware sequence list."""
+        return 'video'
+
     @property
     def univ(self):
         """
