@@ -72,6 +72,23 @@
 .hdoff {
     color: silver; font-weight:normal; text-shadow: 0 0 5em #fff;
 }
+
+.dmcloud_block .warning {
+    padding:5px;
+    border: 1px solid #EDBD3C;
+}
+.dmcloud_block .warning i {
+    margin-right:10px;
+    color:#EDBD3C;
+}
+.dmcloud_block .error {
+    padding:5px;
+    border: 1px solid #D0696F;
+}
+.dmcloud_block .error i {
+    margin-right:10px;
+    color:#D0696F;
+}
 /*
 .vjs-default-skin .vjs-control {
     width: 3.4em;

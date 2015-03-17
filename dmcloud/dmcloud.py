@@ -35,7 +35,10 @@ log = logging.getLogger(__name__)
 ################################################################################
 #  Specifics Imports ###########################################################
 try:
-    from cloudkey import CloudKey, SerializerError
+    from cloudkey import CloudKey
+    from cloudkey import SerializerError
+    from cloudkey import InvalidParameter
+    
 except ImportError:
     log.error("You have to install cloudkey before using this block")
     raise
@@ -88,7 +91,7 @@ class DmCloud(XBlock):
 
     player = String(
         display_name=_("Player"),
-        help=_("Player use to display the video"),
+        help=_("Player used to display the video"),
         scope=Scope.settings,
         values=[
             {'name': "HTML5", 'val': "HTML5"},
@@ -156,43 +159,53 @@ class DmCloud(XBlock):
         subs_url = {}
         auth_key = ""
         auth_key_secure = ""
+        msg = {}
 
         if self.id_video != "":
-            assets = self.cloudkey.media.get_assets(id=self.id_video)
-            if self.player == "Dailymotion":
-                auth_key = self.get_dailymotion_auth_key(False)
-                auth_key_secure = self.get_dailymotion_auth_key(True)
-
-            else:
-                #assets['jpeg_thumbnail_source']['stream_url']
-                #mp4_h264_aac
-                #mp4_h264_aac_ld
-                #mp4_h264_aac_hq -> 480
-                #mp4_h264_aac_hd -> 720
-                #jpeg_thumbnail_medium
-                thumbnail_url = self.cloudkey.media.get_stream_url(
-                    id=self.id_video, asset_name='jpeg_thumbnail_source'
-                )
-                stream_url = self.get_stream_url()
-                if assets.get('mp4_h264_aac_hd'):
-                    stream_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=False)
-                elif assets.get('mp4_h264_aac_hq'):
-                    stream_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=False)
-                subs_url = self.get_subs_url()
-            if self.allow_download_video:
-                download_url_ld = self.get_stream_url('mp4_h264_aac_ld', download=True)
-                download_url_std = self.get_stream_url(download=True)
-                if assets.get('mp4_h264_aac_hd'):
-                    download_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=True)
-                elif assets.get('mp4_h264_aac_hq'):
-                    download_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=True)
-
+            try:
+                assets = self.cloudkey.media.get_assets(id=self.id_video)
+                if self.player == "Dailymotion":
+                    auth_key = self.get_dailymotion_auth_key(False)
+                    auth_key_secure = self.get_dailymotion_auth_key(True)
+                else:
+                    #assets['jpeg_thumbnail_source']['stream_url']
+                    #mp4_h264_aac
+                    #mp4_h264_aac_ld
+                    #mp4_h264_aac_hq -> 480
+                    #mp4_h264_aac_hd -> 720
+                    #jpeg_thumbnail_medium
+                    thumbnail_url = self.cloudkey.media.get_stream_url(
+                        id=self.id_video, asset_name='jpeg_thumbnail_source'
+                    )
+                    stream_url = self.get_stream_url()
+                    if assets.get('mp4_h264_aac_hd'):
+                        stream_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=False)
+                    elif assets.get('mp4_h264_aac_hq'):
+                        stream_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=False)
+                    subs_url = self.get_subs_url()
+                if self.allow_download_video:
+                    download_url_ld = self.get_stream_url('mp4_h264_aac_ld', download=True)
+                    download_url_std = self.get_stream_url(download=True)
+                    if assets.get('mp4_h264_aac_hd'):
+                        download_url_hd = self.get_stream_url('mp4_h264_aac_hd', download=True)
+                    elif assets.get('mp4_h264_aac_hq'):
+                        download_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=True)
+            except InvalidParameter:
+                msg = {"level": "warning", "message": _("Your video ID is invalid")}
+            except Exception as e:
+                # we use Exception to catch everything because if one fails, all xblock on page fail
+                # and become uneditable
+                msg = {"level": "error", "message": u'\n***** Unexpected error : %r' %e}
+                log.error(msg['message'])
+        else:
+            msg = {"level": "warning", "message": _("You must provide a video ID")}
         #create url for videojs to add it directly in the template
         dmjsurl = self.runtime.local_resource_url(self, "public/js/src/dmplayer-sdk.js")
 
         frag = Fragment()
         frag.add_content(self.render_template("templates/html/dmcloud.html", {
             'self': self,
+            'msg': msg,
             'id': self.location.html_id(),
             #dmplayer
             'auth_key':auth_key,
