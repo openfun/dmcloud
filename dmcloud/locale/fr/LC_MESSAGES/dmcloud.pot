@@ -1,0 +1,70 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Dmcloud V1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-17 13:45+0000\n"
+"PO-Revision-Date: 2015-03-17 17:03+0100\n"
+"Last-Translator: Nicolas CAN <nicolas.can@univ-lille1.fr>\n"
+"Language-Team: Nicolas CAN <nicolas.can@univ-lille1.fr>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.6.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: dmcloud.py:67
+msgid ""
+"The name students see. This name appears in the course ribbon and as a "
+"header for the video."
+msgstr ""
+"Le nom vu par les apprenants. Ce nom apparait dans le bandeau du cours et "
+"comme entête de la vidéo"
+
+#: dmcloud.py:68
+msgid "Component Display Name"
+msgstr "Nom du composant"
+
+#: dmcloud.py:69
+msgid "New video"
+msgstr "Nouvelle vidéo"
+
+#: dmcloud.py:75
+msgid "Fill this with the ID of the video found on DM Cloud"
+msgstr ""
+"Renseigner ce champ avec l'identifiant de la vidéo récupéré sur le site "
+"Dailymotion Cloud"
+
+#: dmcloud.py:77
+msgid "Video ID"
+msgstr "Identifiant de la vidéo"
+
+#: dmcloud.py:81
+msgid "Allow students to download this video."
+msgstr "Autoriser les apprenants à télécharger la vidéo"
+
+#: dmcloud.py:82
+msgid "Video Download Allowed"
+msgstr "Téléchargement de la vidéo autorisé"
+
+#: dmcloud.py:94
+msgid "Player"
+msgstr "Lecteur"
+
+#: dmcloud.py:95
+msgid "Player used to display the video"
+msgstr "Lecteur utilisé pour lire la vidéo"
+
+#: dmcloud.py:196
+msgid "Your video ID is invalid"
+msgstr "L'identifiant de la vidéo est invalide"
+
+#: dmcloud.py:200
+msgid "You must provide a video ID"
+msgstr "Vous devez renseigner un identifiant de vidéo"
