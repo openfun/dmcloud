@@ -70,3 +70,9 @@ msgstr "Normal"
 #: dmcloud.py:113 dmcloud.py:114
 msgid "Slower"
 msgstr "Ralentie"
+
+msgid "Your video ID is invalid"
+msgstr "L'ID de cette video est invalide"
+
+msgid "Your university ID is invalid"
+msgstr "L'id de cet établissment est invalide"
