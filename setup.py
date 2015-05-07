@@ -21,7 +21,7 @@ def package_data(pkg, root_list):
 
 setup(
     name='dmcloud-xblock',
-    version='0.2',
+    version='1.1.8',
     description='XBlock - DM Cloud Video Player',   # TODO: write a better description.
     packages=[
         'dmcloud',
@@ -35,5 +35,5 @@ setup(
         ]
     },
     #package_data=package_data("dmcloud", "static"),
-    package_data=package_data("dmcloud", ["templates", "public", "locale"]), 
+    package_data=package_data("dmcloud", ["templates", "public", "locale"]),
 )

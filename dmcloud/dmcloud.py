@@ -37,8 +37,8 @@ log = logging.getLogger(__name__)
 try:
     from cloudkey import CloudKey
     from cloudkey import SerializerError
-    from cloudkey import InvalidParameter
-    
+    from cloudkey import InvalidParameter, AuthenticationError
+
 except ImportError:
     log.error("You have to install cloudkey before using this block")
     raise
@@ -196,10 +196,12 @@ class DmCloud(XBlock):
                         download_url_hd = self.get_stream_url('mp4_h264_aac_hq', download=True)
             except InvalidParameter:
                 msg = {"level": "warning", "message": _("Your video ID is invalid")}
+            except AuthenticationError:
+                msg = {"level": "warning", "message": _("Your university ID is invalid")}
             except Exception as e:
                 # we use Exception to catch everything because if one fails, all xblock on page fail
                 # and become uneditable
-                msg = {"level": "error", "message": u'\n***** Unexpected error : %r' %e}
+                msg = {"level": "error", "message": u'Unexpected error : %r' %e}
                 log.error(msg['message'])
         else:
             msg = {"level": "warning", "message": _("You must provide a video ID")}
