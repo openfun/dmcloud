@@ -121,7 +121,7 @@ function DmCloudVideo(runtime, element) {
     var trackload = new Array(); // array contening tracks id and cues (queues ?)
 
     /* Here's where you'd do things on page load. */
-    //$(function ($) {
+    $(function ($) {
         if (video_id) {
             if (!videoPlayer) {
                 delete videojs.players[video_id];
@@ -192,7 +192,7 @@ function DmCloudVideo(runtime, element) {
 
             });
         }  //end if video_id
-    //});// end function
+    });// end function
 
     /**
     Show or hide subtitle panel on right
