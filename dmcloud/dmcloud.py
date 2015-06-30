@@ -239,7 +239,7 @@ class DmCloud(XBlock):
             frag.initialize_js('DmCloudPlayer')
         else:
             frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
-            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video.js"))
+            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-dev.js"))
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
             frag.initialize_js('DmCloudVideo')
 
