@@ -20,7 +20,6 @@ function DmCloudVideo(runtime, element) {
         videojs.HDPlugin = videojs.Button.extend({
             /* @constructor */
             init: function(player, options){
-                this.player = player;
                 player.videoHD = options.videoHD;
                 videojs.Button.call(this, player, options);
                 this.on('click', this.onClick);
