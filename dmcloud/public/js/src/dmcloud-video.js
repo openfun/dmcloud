@@ -175,6 +175,7 @@ function DmCloudVideo(runtime, element) {
                     $("#" + subtitle_id + " span").removeClass("current");
                     var tabActiveCues = videoPlayer.getChild('textTrackDisplay').children()[0].activeCues();
                     var lastcueid = 0;
+                    var cue = null;
                     for (cue in tabActiveCues) {
                         $("#" + subtitle_id + "_cue_" + tabActiveCues[cue].id).addClass("current");
                         lastcueid = tabActiveCues[cue].id;
