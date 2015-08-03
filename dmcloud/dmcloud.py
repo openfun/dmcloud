@@ -49,8 +49,6 @@ except ImportError:
     raise
 
 
-VIDEO_JS_VERSION = '4.12.10'
-
 ################################################################################
 class DmCloud(XBlock):
     """
@@ -240,8 +238,8 @@ class DmCloud(XBlock):
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-dm.js"))
             frag.initialize_js('DmCloudPlayer')
         else:
-            frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-%s/video-js.min.css" % VIDEO_JS_VERSION))
-            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-%s/video.js" % VIDEO_JS_VERSION))
+            frag.add_css_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-js.min.css"))
+            frag.add_javascript_url(self.runtime.local_resource_url(self, "public/video-js-4.10.2/video-dev.js"))
             frag.add_javascript(self.resource_string("public/js/src/dmcloud-video.js"))
             frag.initialize_js('DmCloudVideo')
 
